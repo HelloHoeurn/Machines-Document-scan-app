@@ -1,4 +1,4 @@
-Pactics_Machine_System/
+Scan_Machine_System/
 ├── _START_HERE.txt                     ← plain-text index of everything
 ├── README_Machine_System.docx          ← master guide (read first)
 ├── 01_Machine_Documents_App/           ← the LIVE app + 4 SQL setup files
