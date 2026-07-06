@@ -1,0 +1,3389 @@
+<!DOCTYPE html>
+<!-- saved from url=(0051)file:///C:/Users/hello.hoeun/Downloads/index_2.html -->
+<html lang="km"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>PACTICS — Machine Documents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="file:///C:/Users/hello.hoeun/Downloads/PACTICS%20%E2%80%94%20Machine%20Documents-13_files/css2" rel="stylesheet">
+<script>
+// Load required libraries, trying multiple CDNs so a blocked one doesn't break the app.
+(function(){
+  function loadFirst(urls, done){
+    var i=0;
+    function tryNext(){
+      if(i>=urls.length){ done(false); return; }
+      var s=document.createElement('script');
+      s.src=urls[i++];
+      s.onload=function(){ done(true); };
+      s.onerror=tryNext;
+      document.head.appendChild(s);
+    }
+    tryNext();
+  }
+  window.__libs = { supabase:false, qrcode:false, xlsx:false };
+  // Supabase (required)
+  loadFirst([
+    "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js",
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.7/supabase.min.js"
+  ], function(ok){ window.__libs.supabase=ok; window.dispatchEvent(new Event('lib-supabase')); });
+  // QR code (needed for the QR labels)
+  loadFirst([
+    "https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js",
+    "https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+  ], function(ok){ window.__libs.qrcode=ok; });
+  // Excel (optional — export falls back to CSV if missing)
+  loadFirst([
+    "https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js",
+    "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+  ], function(ok){ window.__libs.xlsx=ok; if(!ok) window.__xlsxFailed=true; });
+  // QR camera scanner (optional — Scan button hidden if it fails)
+  loadFirst([
+    "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js",
+    "https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"
+  ], function(ok){ window.__libs.scanner=ok; window.dispatchEvent(new Event('lib-scanner')); });
+  // jsQR — pure-JS QR decoder used for reliable frame decoding on iPhone Safari
+  loadFirst([
+    "https://unpkg.com/jsqr@1.4.0/dist/jsQR.js",
+    "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"
+  ], function(ok){ window.__libs.jsqr=ok; window.dispatchEvent(new Event('lib-scanner')); });
+})();
+</script><script src="./PACTICS — Machine Documents-15_files/supabase.min.js.download"></script><script src="./PACTICS — Machine Documents-15_files/qrcode.min.js.download"></script><script src="./PACTICS — Machine Documents-15_files/xlsx.full.min.js.download"></script><script src="./PACTICS — Machine Documents-15_files/html5-qrcode.min.js.download"></script><script src="./PACTICS — Machine Documents-15_files/jsQR.js.download"></script><script src="file:///C:/Users/hello.hoeun/Downloads/PACTICS%20%E2%80%94%20Machine%20Documents-13_files/supabase.min.js.download"></script><script src="file:///C:/Users/hello.hoeun/Downloads/PACTICS%20%E2%80%94%20Machine%20Documents-13_files/qrcode.min.js.download"></script><script src="file:///C:/Users/hello.hoeun/Downloads/PACTICS%20%E2%80%94%20Machine%20Documents-13_files/xlsx.full.min.js.download"></script><script src="file:///C:/Users/hello.hoeun/Downloads/PACTICS%20%E2%80%94%20Machine%20Documents-13_files/html5-qrcode.min.js.download"></script><script src="file:///C:/Users/hello.hoeun/Downloads/PACTICS%20%E2%80%94%20Machine%20Documents-13_files/jsQR.js.download"></script>
+<style>
+  :root{
+    --primary:#0C5283; --dark:#08385A; --ok:#1F7A6B; --amber:#C46A1B; --err:#C0392B;
+    --line:#E2EAF1; --grey:#5C6B7A; --faint:#9AAAB8; --card:#fff; --bg:#F4F7FA;
+    --radius:12px; --shadow:0 1px 3px rgba(8,56,90,.08),0 1px 2px rgba(8,56,90,.04);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:#13212E;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.45}
+  h1,h2,h3{margin:0;color:var(--dark)}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit;font-size:15px}
+  .hidden{display:none !important}
+
+  header{background:var(--dark);color:#fff;padding:12px 16px;position:sticky;top:0;z-index:30}
+  .head-row{display:flex;align-items:center;gap:12px;max-width:1000px;margin:0 auto}
+  .brand{font-weight:800;font-size:16px;line-height:1.1}
+  .brand small{display:block;font-weight:400;font-size:11px;opacity:.85}
+  .spacer{flex:1}
+  .whoami{font-size:12px;opacity:.9;cursor:pointer;text-decoration:underline}
+  .lang-btn{margin-left:12px;background:rgba(255,255,255,.16);color:#fff;border:none;border-radius:14px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer}
+  .lang-btn:hover{background:rgba(255,255,255,.28)}
+  .scan-btn{margin-left:8px;background:#1F7A6B;color:#fff;border:none;border-radius:14px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+  .scan-btn:hover{background:#186354}
+  .scan-ic{font-size:14px;line-height:1}
+  .btn-scan{background:#1F7A6B;color:#fff;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+  .btn-scan:hover{background:#186354}
+  .scan-overlay{position:fixed;inset:0;background:rgba(6,29,73,.92);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
+  .scan-overlay.open{display:flex}
+  .scan-box{background:#fff;border-radius:16px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+  .scan-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--dark);color:#fff}
+  .scan-head h3{margin:0;font-size:16px}
+  .scan-head .x{background:none;border:none;color:#fff;font-size:26px;cursor:pointer;line-height:1}
+  .scan-hint{padding:12px 16px 4px;color:var(--grey);font-size:13px;text-align:center}
+  .scan-reader{margin:8px 16px;border-radius:12px;overflow:hidden;background:#000;min-height:240px;position:relative}
+  .scan-reader video{width:100%!important;height:auto!important;min-height:240px;object-fit:cover;border-radius:12px;display:block!important;visibility:visible!important;opacity:1!important}
+  .scan-frame{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:55%;aspect-ratio:1;border:3px solid rgba(31,122,107,.95);border-radius:14px;box-shadow:0 0 0 2000px rgba(0,0,0,.25);pointer-events:none;z-index:2}
+  .scan-frame::before,.scan-frame::after{content:"";position:absolute;width:22px;height:22px;border:4px solid #1F7A6B}
+  .scan-frame::before{top:-3px;left:-3px;border-right:none;border-bottom:none;border-radius:8px 0 0 0}
+  .scan-frame::after{bottom:-3px;right:-3px;border-left:none;border-top:none;border-radius:0 0 8px 0}
+  .scan-torch{position:absolute;top:10px;right:10px;z-index:3;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:20px;width:40px;height:40px;font-size:18px;cursor:pointer}
+  .scan-result{padding:4px 16px;text-align:center;font-size:14px;min-height:22px;color:var(--err)}
+  .scan-actions{padding:8px 16px 18px;display:flex;justify-content:center}
+  .scan-manual{padding:0 16px 18px}
+  .scan-or{text-align:center;color:var(--faint);font-size:12px;margin:2px 0 8px}
+  .scan-tip{text-align:center;color:var(--grey);font-size:11.5px;padding:6px 16px 0}
+  .scan-zoom{display:flex;align-items:center;gap:10px;padding:8px 16px 0}
+  .scan-zoom input{flex:1}
+  .scan-zoom-ic{font-size:14px}
+  .scan-manual-row{display:flex;gap:8px}
+  .scan-manual-row input{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px}
+  .detail-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
+  :lang(km), [lang="km"]{font-family:'Noto Sans Khmer','Khmer OS','Battambang',-apple-system,sans-serif}
+  main{max-width:1000px;margin:0 auto;padding:16px}
+
+  .search-bar input{width:100%;padding:14px;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .topnav{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:49px;z-index:20}
+  .topnav-inner{max-width:1000px;margin:0 auto;display:flex}
+  .topnav button{flex:0 0 auto;padding:13px 22px;background:none;border:none;border-bottom:3px solid transparent;color:var(--grey);font-weight:600;font-size:14px;cursor:pointer}
+  .topnav button.active{color:var(--primary);border-bottom-color:var(--primary)}
+  .list-top{display:flex;gap:10px;align-items:stretch;margin-bottom:4px}
+  .list-top .btn{white-space:nowrap}
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:6px}
+  .stat{background:#fff;border-radius:10px;box-shadow:var(--shadow);padding:14px}
+  .stat .n{font-size:24px;font-weight:800;color:var(--dark)}
+  .stat .n.warn{color:var(--amber)} .stat .n.err{color:var(--err)}
+  .stat .l{font-size:12px;color:var(--grey);text-transform:uppercase;letter-spacing:.03em;margin-top:2px}
+  .exp-btns{display:flex;gap:6px}
+  .mini{font-size:12px;color:var(--grey)}
+  .qr-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .qr-selbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .qr-picklist{max-height:280px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+  .qr-pick{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid #EEF2F6;cursor:pointer}
+  .qr-pick:last-child{border-bottom:none}
+  .qr-pick:hover{background:#F7FAFC}
+  .qr-pick input{width:17px;height:17px;flex:0 0 auto}
+  .qr-pick .c{font-weight:700;color:var(--dark);min-width:78px}
+  .qr-pick .m{color:var(--grey);font-size:13px}
+  .qr-sheet-area{margin-top:14px}
+  .qr-labels{display:grid;grid-template-columns:repeat(2, 3cm);gap:6px;justify-content:center}
+  .qr-label{width:3cm;height:2cm;border:1px solid #ccc;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;box-sizing:border-box;page-break-inside:avoid;break-inside:avoid}
+  .qr-label .qim{width:1.35cm;height:1.35cm;display:flex;align-items:center;justify-content:center}
+  .qr-label .qim canvas,.qr-label .qim img{width:100%!important;height:100%!important}
+  .qr-label .qc{font-size:9pt;font-weight:800;color:#08385A;margin-top:1px;line-height:1}
+  @media print {
+    header, .topnav, .no-print { display:none !important; }
+    body, html { background:#fff; }
+    main { padding:0; max-width:none; }
+    .qr-sheet-area { margin:0; }
+    .qr-labels { gap:4px; }
+    .qr-label { border:1px solid #999; }
+    @page { margin:8mm; }
+  }
+  .count-line{color:var(--grey);font-size:13px;margin:10px 2px}
+  .m-row{background:#fff;border-radius:10px;box-shadow:var(--shadow);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:box-shadow .12s}
+  .m-row:hover{box-shadow:0 0 0 2px rgba(12,82,131,.15)}
+  .m-row .code{font-weight:800;color:var(--dark);min-width:84px}
+  .m-row .info{flex:1;min-width:0}
+  .m-row .info .t{font-weight:600;font-size:14px}
+  .m-row .info .m{color:var(--grey);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .m-row .chev{color:var(--faint)}
+  .doc-badges{display:flex;gap:5px}
+  .doc-badge{font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;background:#EEF3F7;color:var(--primary)}
+
+  .btn{padding:11px 16px;border:none;border-radius:9px;font-weight:700;font-size:14px}
+  .btn-primary{background:var(--primary);color:#fff}
+  .btn-secondary{background:#fff;color:var(--dark);border:1px solid var(--line)}
+  .btn-sm{padding:7px 12px;font-size:13px}
+  .btn-danger{background:#fff;color:var(--err);border:1px solid #F0C9C5}
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+
+  /* machine detail */
+  .back{display:inline-flex;align-items:center;gap:6px;color:var(--primary);font-weight:600;font-size:14px;cursor:pointer;margin-bottom:12px}
+  .passport{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .passport .pcode{font-size:24px;font-weight:800;color:var(--dark)}
+  .passport .pmeta{color:var(--grey);font-size:13px;margin-top:4px}
+  .qr-wrap{text-align:center}
+  .qr-wrap .qrbox{display:inline-block;padding:10px;background:#fff;border:1px solid var(--line);border-radius:10px}
+  .qr-wrap .lbl{font-weight:800;color:var(--dark);margin-top:6px}
+
+  .doc-section{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+  .doc-section .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .doc-section .sec-head h2{font-size:17px}
+  table.doc{width:100%;border-collapse:collapse}
+  table.doc th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);font-weight:700;padding:6px 8px;border-bottom:1px solid var(--line)}
+  table.doc td{padding:9px 8px;border-bottom:1px solid #EEF2F6;font-size:14px;vertical-align:top}
+  table.doc tr:last-child td{border-bottom:none}
+  table.doc .row-actions{white-space:nowrap;text-align:right}
+  /* Freeze table header rows on the dashboard (Excel-style Freeze Panes).
+     Offset 96px = sticky header (49px) + sticky tab bar (~47px), so the
+     column headers stay pinned just under the tabs while the list scrolls. */
+  #view-dashboard table.doc thead th{
+    position:sticky; top:96px; z-index:5;
+    background:#fff;
+    box-shadow:inset 0 -1px 0 var(--line);
+  }
+  .icon-btn{background:none;border:none;color:var(--grey);font-size:15px;padding:4px 6px;cursor:pointer}
+  .icon-btn:hover{color:var(--primary)}
+  .empty{color:var(--faint);font-size:14px;padding:14px 6px;text-align:center}
+  .due-soon{color:var(--amber);font-weight:700}
+  .due-over{color:var(--err);font-weight:700}
+  .upd{color:var(--faint);font-size:11px;margin-top:2px}
+
+  .backdrop{position:fixed;inset:0;background:rgba(8,30,50,.45);display:none;align-items:flex-end;justify-content:center;z-index:50}
+  .backdrop.open{display:flex}
+  .sheet{background:#fff;width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:16px 16px 0 0;padding:18px}
+  @media (min-width:600px){.backdrop{align-items:center}.sheet{border-radius:16px}}
+  .sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .sheet-head .x{background:none;border:none;font-size:26px;color:var(--grey)}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+  .field input,.field textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px}
+  .field.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .check-item{display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:14px;color:var(--grey);cursor:pointer;user-select:none}
+  .check-item.on{border-color:var(--primary);background:#E7F0F7;color:var(--primary);font-weight:600}
+  .check-item .box{width:16px;height:16px;border:1.5px solid var(--faint);border-radius:4px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+  .check-item.on .box{background:var(--primary);border-color:var(--primary)}
+  .check-chip{display:inline-block;font-size:11px;font-weight:600;background:#E7F0F7;color:var(--primary);padding:2px 8px;border-radius:10px;margin:2px 3px 2px 0}
+
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--dark);color:#fff;padding:12px 18px;border-radius:24px;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transition:.25s;z-index:80}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast.err{background:var(--err)} .toast.ok{background:var(--ok)}
+  .setup-warn{max-width:560px;margin:60px auto;padding:24px;background:#fff;border-radius:12px}
+</style>
+<script src="file:///C:/Users/hello.hoeun/Downloads/PACTICS%20%E2%80%94%20Machine%20Documents-13_files/supabase.min(1).js.download"></script><script src="./PACTICS — Machine Documents-15_files/supabase.min(1).js.download"></script></head>
+<body>
+
+<div id="app">
+  <header>
+    <div class="head-row">
+      <div class="brand">PACTICS<small data-i18n="subtitle">ឯកសារ​ម៉ាស៊ីន</small></div>
+      <div class="spacer"></div>
+      <button id="scan-btn" class="scan-btn" title="Scan" style=""><span class="scan-ic">▣</span> <span data-i18n="scan">ស្កេន</span></button>
+      <span class="whoami" id="whoami">កំណត់​ឈ្មោះ​អ្នក</span>
+      <button id="lang-btn" class="lang-btn" title="Language">EN</button>
+    </div>
+  </header>
+  <nav class="topnav" id="topnav">
+    <div class="topnav-inner">
+      <button data-nav="machines" class="active" data-i18n="nav_machines">ម៉ាស៊ីន</button>
+      <button data-nav="dashboard" data-i18n="nav_dashboard">ផ្ទាំង​គ្រប់គ្រង</button>
+      <button data-nav="qrprint" data-i18n="nav_qr">បោះពុម្ព QR</button>
+    </div>
+  </nav>
+  <main>
+    <!-- LIST VIEW -->
+    <section id="view-list">
+      <div class="list-top">
+        <div class="search-bar" style="flex:1"><input id="search" data-i18n-ph="search_machines" placeholder="ស្វែងរក​ម៉ាស៊ីន​តាម​លេខកូដ ប្រភេទ ម៉ាក ម៉ូដែល ស៊េរី…"></div>
+        <button class="btn btn-scan" id="scan-btn2" style=""><span class="scan-ic">▣</span> <span data-i18n="scan">ស្កេន</span></button>
+        <button class="btn btn-primary" id="add-machine" data-i18n="add_machine">+ បន្ថែម​ម៉ាស៊ីន</button>
+      </div>
+      <div class="count-line" id="count">489 ម៉ាស៊ីន</div>
+      <div id="list">
+    <div class="m-row" data-code="BAT-01">
+      <div class="code">BAT-01</div>
+      <div class="info"><div class="t">Big Auto · JUKI</div>
+        <div class="m">PS800(13085) · 1MP7SB0027</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BAT-02">
+      <div class="code">BAT-02</div>
+      <div class="info"><div class="t">Big Auto · JUKI</div>
+        <div class="m">PS800(13085) · 1MP7RL0097</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BAT-03">
+      <div class="code">BAT-03</div>
+      <div class="info"><div class="t">Big Auto · JUKI</div>
+        <div class="m">PS800(13085) · 1MP7TK0131</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BAT-04">
+      <div class="code">BAT-04</div>
+      <div class="info"><div class="t">Big Auto · JUKI</div>
+        <div class="m">PS800(13085) · 1MP7UK0021</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BAT-05">
+      <div class="code">BAT-05</div>
+      <div class="info"><div class="t">Big Auto · JUKI</div>
+        <div class="m">PS800(13085) · 1MP7UK0024</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BH-01">
+      <div class="code">BH-01</div>
+      <div class="info"><div class="t">Button Hole · Jack</div>
+        <div class="m">JK-T190GK-1-D · 22103500896</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BH-02">
+      <div class="code">BH-02</div>
+      <div class="info"><div class="t">Button Hole · JUKI</div>
+        <div class="m">LBH-1790SS · PLOTG00279</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-01">
+      <div class="code">BT-01</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 23093501140</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-02">
+      <div class="code">BT-02</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 23073500697</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-03">
+      <div class="code">BT-03</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 23093550448</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-04">
+      <div class="code">BT-04</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 24053500437</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-05">
+      <div class="code">BT-05</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 23093500371</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-06">
+      <div class="code">BT-06</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 24053501874</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-07">
+      <div class="code">BT-07</div>
+      <div class="info"><div class="t">Bartack · JUKI</div>
+        <div class="m">LK-1900B-SS · 2L1KB01117</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-08">
+      <div class="code">BT-08</div>
+      <div class="info"><div class="t">Bartack · JUKI</div>
+        <div class="m">LK-1900B-SS · 2L1JF01153</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-09">
+      <div class="code">BT-09</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 24053500528</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-10">
+      <div class="code">BT-10</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 24063500417</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-11">
+      <div class="code">BT-11</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 24063505012</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-12">
+      <div class="code">BT-12</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 24063501413</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-13">
+      <div class="code">BT-13</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 24063504788</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-14">
+      <div class="code">BT-14</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 24063501421</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-15">
+      <div class="code">BT-15</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 24063502885</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-16">
+      <div class="code">BT-16</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 24063505015</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-17">
+      <div class="code">BT-17</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 24063502852</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-18">
+      <div class="code">BT-18</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 24063504675</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-19">
+      <div class="code">BT-19</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 25053502841</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-20">
+      <div class="code">BT-20</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 25053501643</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-21">
+      <div class="code">BT-21</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 25053502840</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-22">
+      <div class="code">BT-22</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 25063504412</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="BT-23">
+      <div class="code">BT-23</div>
+      <div class="info"><div class="t">Bartack · Jack</div>
+        <div class="m">JK-T1900GSK-D · 25063503758</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="DN-01">
+      <div class="code">DN-01</div>
+      <div class="info"><div class="t">Double Needle · Jack</div>
+        <div class="m">JK-58750J-403E · 191210 2064291</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="DN-02">
+      <div class="code">DN-02</div>
+      <div class="info"><div class="t">Double Needle · Jack</div>
+        <div class="m"> · 24011630382</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-01">
+      <div class="code">FL-01</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 280770042</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-02">
+      <div class="code">FL-02</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 250370032</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-03">
+      <div class="code">FL-03</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 270770116</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-04">
+      <div class="code">FL-04</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 2603Y21003</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-05">
+      <div class="code">FL-05</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 280370048</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-06">
+      <div class="code">FL-06</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 280370015</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-07">
+      <div class="code">FL-07</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m">GK32500-1356 · 270770082</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-08">
+      <div class="code">FL-08</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 240870058</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-09">
+      <div class="code">FL-09</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 250370039</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-10">
+      <div class="code">FL-10</div>
+      <div class="info"><div class="t">Flatlock · PEGASUS</div>
+        <div class="m">W3662P-01G · 7122496</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-11">
+      <div class="code">FL-11</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 241170059</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-12">
+      <div class="code">FL-12</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m">GK32500 · 290970013</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-13">
+      <div class="code">FL-13</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 281170043</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-14">
+      <div class="code">FL-14</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 280770111</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-15">
+      <div class="code">FL-15</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 290770001</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-16">
+      <div class="code">FL-16</div>
+      <div class="info"><div class="t">Flatlock · PEGASUS</div>
+        <div class="m"></div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-17">
+      <div class="code">FL-17</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 260370074</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-18">
+      <div class="code">FL-18</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 250370035</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-19">
+      <div class="code">FL-19</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 290970039</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-20">
+      <div class="code">FL-20</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 250370034</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-21">
+      <div class="code">FL-21</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 250370031</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-22">
+      <div class="code">FL-22</div>
+      <div class="info"><div class="t">Flatlock · Jack</div>
+        <div class="m"> · 22012511893 66</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-23">
+      <div class="code">FL-23</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 280970049</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-24">
+      <div class="code">FL-24</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 281070027</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-25">
+      <div class="code">FL-25</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 27077007</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-26">
+      <div class="code">FL-26</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 280970049</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-27">
+      <div class="code">FL-27</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 280370007</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-28">
+      <div class="code">FL-28</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 280670063</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-29">
+      <div class="code">FL-29</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 280370075</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-30">
+      <div class="code">FL-30</div>
+      <div class="info"><div class="t">Flatlock · Typical</div>
+        <div class="m"> · 280370016</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FL-32">
+      <div class="code">FL-32</div>
+      <div class="info"><div class="t">Flatlock · TYPICAL</div>
+        <div class="m">GSK32500 · 280070080</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="FOA-01">
+      <div class="code">FOA-01</div>
+      <div class="info"><div class="t">Feed of Arm</div>
+        <div class="m"> · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-01">
+      <div class="code">HP-01</div>
+      <div class="info"><div class="t">High Post · GOLDEN
+ WHEEL</div>
+        <div class="m">CS 335BH · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-02">
+      <div class="code">HP-02</div>
+      <div class="info"><div class="t">High Post · GOLDEN WHEEL</div>
+        <div class="m"> · CS-335BH</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-03">
+      <div class="code">HP-03</div>
+      <div class="info"><div class="t">High Post · Typical</div>
+        <div class="m"> · 23040158</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-04">
+      <div class="code">HP-04</div>
+      <div class="info"><div class="t">High Post · Typical</div>
+        <div class="m"> · 23040160</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-05">
+      <div class="code">HP-05</div>
+      <div class="info"><div class="t">High Post · Typical</div>
+        <div class="m"> · 23040162</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-06">
+      <div class="code">HP-06</div>
+      <div class="info"><div class="t">High Post · Typical</div>
+        <div class="m"> · 23040159</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-07">
+      <div class="code">HP-07</div>
+      <div class="info"><div class="t">High Post · GOLDEN WHEEL</div>
+        <div class="m"> · 703666G</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-08">
+      <div class="code">HP-08</div>
+      <div class="info"><div class="t">High Post · Typical</div>
+        <div class="m"> · 23040161</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-09">
+      <div class="code">HP-09</div>
+      <div class="info"><div class="t">High Post · JUKI</div>
+        <div class="m"> · 3D9RA0015</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-10">
+      <div class="code">HP-10</div>
+      <div class="info"><div class="t">High Post · JKNY</div>
+        <div class="m"> · 000 910065</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-11">
+      <div class="code">HP-11</div>
+      <div class="info"><div class="t">High Post · JKNY</div>
+        <div class="m"> · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-12">
+      <div class="code">HP-12</div>
+      <div class="info"><div class="t">High Post · JKNY</div>
+        <div class="m"> · 000 910086</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-13">
+      <div class="code">HP-13</div>
+      <div class="info"><div class="t">High Post · JKNY</div>
+        <div class="m"> · 000 910040</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-14">
+      <div class="code">HP-14</div>
+      <div class="info"><div class="t">High Post · LETKO</div>
+        <div class="m">CW-246 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-15">
+      <div class="code">HP-15</div>
+      <div class="info"><div class="t">High Post · JUKI</div>
+        <div class="m"> · 3D9RA00016</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-16">
+      <div class="code">HP-16</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 250507001</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-17">
+      <div class="code">HP-17</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 250507002</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-18">
+      <div class="code">HP-18</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 250507003</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-19">
+      <div class="code">HP-19</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 250507006</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-20">
+      <div class="code">HP-20</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 250507004</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-22">
+      <div class="code">HP-22</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 250507007</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-23">
+      <div class="code">HP-23</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 250507005</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-24">
+      <div class="code">HP-24</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 250507008</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-25">
+      <div class="code">HP-25</div>
+      <div class="info"><div class="t">High Post</div>
+        <div class="m"> · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-26">
+      <div class="code">HP-26</div>
+      <div class="info"><div class="t">High Post</div>
+        <div class="m"> · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-27">
+      <div class="code">HP-27</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 20251114002</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-28">
+      <div class="code">HP-28</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 20251114001</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-29">
+      <div class="code">HP-29</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 20251114005</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-30">
+      <div class="code">HP-30</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 20251114004</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="HP-31">
+      <div class="code">HP-31</div>
+      <div class="info"><div class="t">High Post · BONA</div>
+        <div class="m">BN-246D · 20251114003</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="IV-01">
+      <div class="code">IV-01</div>
+      <div class="info"><div class="t">Invert</div>
+        <div class="m"> · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-01">
+      <div class="code">LS-01</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520912</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-02">
+      <div class="code">LS-02</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 18021 00327611</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-03">
+      <div class="code">LS-03</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 20014 00803227</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-04">
+      <div class="code">LS-04</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 200 2400325129</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-05">
+      <div class="code">LS-05</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · 190 11034409904</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-06">
+      <div class="code">LS-06</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 20024 00362630</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-07">
+      <div class="code">LS-07</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-08">
+      <div class="code">LS-08</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 180210 0326711</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-09">
+      <div class="code">LS-09</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · 19011 03405018</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-10">
+      <div class="code">LS-10</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 19074 04144432</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-100">
+      <div class="code">LS-100</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A6F · 1905 401425423</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-101">
+      <div class="code">LS-101</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A6F · 22074515633</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-102">
+      <div class="code">LS-102</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · 18011 03408704</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-103">
+      <div class="code">LS-103</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 200 1400718832</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-104">
+      <div class="code">LS-104</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-105">
+      <div class="code">LS-105</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520910</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-106">
+      <div class="code">LS-106</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520904</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-107">
+      <div class="code">LS-107</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-108">
+      <div class="code">LS-108</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A6F · 1905 402784623</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-109">
+      <div class="code">LS-109</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 200 1400639127</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-11">
+      <div class="code">LS-11</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 180210 2712907</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-110">
+      <div class="code">LS-110</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520898</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-111">
+      <div class="code">LS-111</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · GC6180</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-112">
+      <div class="code">LS-112</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · 190 1103401918</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-113">
+      <div class="code">LS-113</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 18021 01653403</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-114">
+      <div class="code">LS-114</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-115">
+      <div class="code">LS-115</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 180 2102354904</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-116">
+      <div class="code">LS-116</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · GC6180</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-117">
+      <div class="code">LS-117</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-118">
+      <div class="code">LS-118</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 2002 400233830</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-119">
+      <div class="code">LS-119</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 200 2400322329</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-12">
+      <div class="code">LS-12</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · 19011 03408604</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-120">
+      <div class="code">LS-120</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-121">
+      <div class="code">LS-121</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 20024 00400522</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-122">
+      <div class="code">LS-122</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 1802 100324711</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-123">
+      <div class="code">LS-123</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 200 2400357940</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-124">
+      <div class="code">LS-124</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-125">
+      <div class="code">LS-125</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 2001 400639227</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-126">
+      <div class="code">LS-126</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · 1801102 386708</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-127">
+      <div class="code">LS-127</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 19061050 66401</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-128">
+      <div class="code">LS-128</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520902</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-129">
+      <div class="code">LS-129</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520913</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-13">
+      <div class="code">LS-13</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 180 2102716307</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-130">
+      <div class="code">LS-130</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A4B · 23077576484</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-131">
+      <div class="code">LS-131</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · 22902402019</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-132">
+      <div class="code">LS-132</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · 190 112380917</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-133">
+      <div class="code">LS-133</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520901</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-134">
+      <div class="code">LS-134</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · FM-20-08-043</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-135">
+      <div class="code">LS-135</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520896</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-136">
+      <div class="code">LS-136</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 20024 00307040</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-137">
+      <div class="code">LS-137</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520888</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-138">
+      <div class="code">LS-138</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520897</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-139">
+      <div class="code">LS-139</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · 100801823</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-14">
+      <div class="code">LS-14</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 18021 02711807</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-140">
+      <div class="code">LS-140</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520886</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-141">
+      <div class="code">LS-141</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520971</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-142">
+      <div class="code">LS-142</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · GC6180</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-143">
+      <div class="code">LS-143</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 180 2102713707</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-144">
+      <div class="code">LS-144</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520890</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-145">
+      <div class="code">LS-145</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 200 2400369930</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-146">
+      <div class="code">LS-146</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · GC610</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-147">
+      <div class="code">LS-147</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · 1901 102389709</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-148">
+      <div class="code">LS-148</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 200 1400716332</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-149">
+      <div class="code">LS-149</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A4B · 23037516006</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-15">
+      <div class="code">LS-15</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 2002400 295932</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-150">
+      <div class="code">LS-150</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · GC6180</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-151">
+      <div class="code">LS-151</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520889</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-152">
+      <div class="code">LS-152</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 180 2700324411</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-153">
+      <div class="code">LS-153</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 1802 102714007</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-154">
+      <div class="code">LS-154</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-155">
+      <div class="code">LS-155</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · 19011034 0218</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-156">
+      <div class="code">LS-156</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 180210 0327511</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-157">
+      <div class="code">LS-157</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 1802 102711707</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-158">
+      <div class="code">LS-158</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · GC6180</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-159">
+      <div class="code">LS-159</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 240445209 17</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-16">
+      <div class="code">LS-16</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 1802 102715007</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-160">
+      <div class="code">LS-160</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 200 1400718632</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-161">
+      <div class="code">LS-161</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A6F · 1905 04024122</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-162">
+      <div class="code">LS-162</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · GC6180</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-163">
+      <div class="code">LS-163</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · GC6180</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-164">
+      <div class="code">LS-164</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 2002 400297632</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-165">
+      <div class="code">LS-165</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · GC6180</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-166">
+      <div class="code">LS-166</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · 121100639</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-167">
+      <div class="code">LS-167</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · 190 1102387508</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-168">
+      <div class="code">LS-168</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A6F · 190 5401428923</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-169">
+      <div class="code">LS-169</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-17">
+      <div class="code">LS-17</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 190 7404190543</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-170">
+      <div class="code">LS-170</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-171">
+      <div class="code">LS-171</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505875</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-172">
+      <div class="code">LS-172</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 18021027 14107</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-173">
+      <div class="code">LS-173</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520932</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-174">
+      <div class="code">LS-174</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-175">
+      <div class="code">LS-175</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520905</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-176">
+      <div class="code">LS-176</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520907</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-177">
+      <div class="code">LS-177</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · GC6180</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-178">
+      <div class="code">LS-178</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · GC6180</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-179">
+      <div class="code">LS-179</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-18">
+      <div class="code">LS-18</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 19061 03409505</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-180">
+      <div class="code">LS-180</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 240 44520906</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-181">
+      <div class="code">LS-181</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520908</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-182">
+      <div class="code">LS-182</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-183">
+      <div class="code">LS-183</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520903</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-184">
+      <div class="code">LS-184</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-185">
+      <div class="code">LS-185</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520909</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-186">
+      <div class="code">LS-186</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-187">
+      <div class="code">LS-187</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-188">
+      <div class="code">LS-188</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 240 44520911</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-189">
+      <div class="code">LS-189</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520914</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-19">
+      <div class="code">LS-19</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 200 240356640</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-190">
+      <div class="code">LS-190</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · 190 1103407804</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-191">
+      <div class="code">LS-191</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 200 1400714532</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-192">
+      <div class="code">LS-192</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 241 44520900</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-193">
+      <div class="code">LS-193</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520916</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-194">
+      <div class="code">LS-194</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · GC6180</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-195">
+      <div class="code">LS-195</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A2s · 19011023857 08</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-196">
+      <div class="code">LS-196</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505883</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-197">
+      <div class="code">LS-197</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 1801 106682302</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-198">
+      <div class="code">LS-198</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A7 · 24044520891</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-199">
+      <div class="code">LS-199</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">JK-5559G-W · 1912101 611107</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-20">
+      <div class="code">LS-20</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-200">
+      <div class="code">LS-200</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505866</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-201">
+      <div class="code">LS-201</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-202">
+      <div class="code">LS-202</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-203">
+      <div class="code">LS-203</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-204">
+      <div class="code">LS-204</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505863</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-205">
+      <div class="code">LS-205</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505919</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-206">
+      <div class="code">LS-206</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074565873</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-207">
+      <div class="code">LS-207</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505912</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-208">
+      <div class="code">LS-208</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505914</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-209">
+      <div class="code">LS-209</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505918</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-21">
+      <div class="code">LS-21</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · 110800162</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-210">
+      <div class="code">LS-210</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505900</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-211">
+      <div class="code">LS-211</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505856</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-212">
+      <div class="code">LS-212</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505894</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-213">
+      <div class="code">LS-213</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505855</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-214">
+      <div class="code">LS-214</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24074505865</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-215">
+      <div class="code">LS-215</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-216">
+      <div class="code">LS-216</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 2407405892</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-217">
+      <div class="code">LS-217</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 25014512629</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-218">
+      <div class="code">LS-218</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 25014521463</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-219">
+      <div class="code">LS-219</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 25014512639</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-22">
+      <div class="code">LS-22</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-220">
+      <div class="code">LS-220</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 25014511740</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-221">
+      <div class="code">LS-221</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 25014520987</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-222">
+      <div class="code">LS-222</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 25014512635</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-223">
+      <div class="code">LS-223</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 25014520894</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-224">
+      <div class="code">LS-224</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 25014513636</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-225">
+      <div class="code">LS-225</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 25014521462</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-226">
+      <div class="code">LS-226</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 25014520484</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-227">
+      <div class="code">LS-227</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 24044508566</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-228">
+      <div class="code">LS-228</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 2514519026</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-229">
+      <div class="code">LS-229</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A5E · 25014518940</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-23">
+      <div class="code">LS-23</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 180210 2354304</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-230">
+      <div class="code">LS-230</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25014511730</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-231">
+      <div class="code">LS-231</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25014519027</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-232">
+      <div class="code">LS-232</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25014506714</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-233">
+      <div class="code">LS-233</div>
+      <div class="info"><div class="t">Lockstitch · A4C</div>
+        <div class="m">A4C · 2506754433</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-234">
+      <div class="code">LS-234</div>
+      <div class="info"><div class="t">Lockstitch · A4C</div>
+        <div class="m">A4C · 2506754455</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-235">
+      <div class="code">LS-235</div>
+      <div class="info"><div class="t">Lockstitch · A4C</div>
+        <div class="m">A4C · 2506754524</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-236">
+      <div class="code">LS-236</div>
+      <div class="info"><div class="t">Lockstitch · A4C</div>
+        <div class="m">A4C · 25067546403</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-237">
+      <div class="code">LS-237</div>
+      <div class="info"><div class="t">Lockstitch · A4C</div>
+        <div class="m">A4C · 25067546401</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-238">
+      <div class="code">LS-238</div>
+      <div class="info"><div class="t">Lockstitch · A4C</div>
+        <div class="m">A4C · 25067546416</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-239">
+      <div class="code">LS-239</div>
+      <div class="info"><div class="t">Lockstitch · A4C</div>
+        <div class="m">A4C · 25067546448</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-24">
+      <div class="code">LS-24</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-240">
+      <div class="code">LS-240</div>
+      <div class="info"><div class="t">Lockstitch · A4C</div>
+        <div class="m">A4C · 25067546435</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-241">
+      <div class="code">LS-241</div>
+      <div class="info"><div class="t">Lockstitch · A4C</div>
+        <div class="m">A4C · 25067546395</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-242">
+      <div class="code">LS-242</div>
+      <div class="info"><div class="t">Lockstitch · A4C</div>
+        <div class="m">A4C · 25067546454</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-243">
+      <div class="code">LS-243</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054500970</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-244">
+      <div class="code">LS-244</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25014512865</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-245">
+      <div class="code">LS-245</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054500803</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-246">
+      <div class="code">LS-246</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054506793</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-247">
+      <div class="code">LS-247</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054500799</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-248">
+      <div class="code">LS-248</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054500918</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-249">
+      <div class="code">LS-249</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25014504131</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-25">
+      <div class="code">LS-25</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6180 · No</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-250">
+      <div class="code">LS-250</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25014512654</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-251">
+      <div class="code">LS-251</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054505598</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-252">
+      <div class="code">LS-252</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054506745</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-253">
+      <div class="code">LS-253</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054507299</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-254">
+      <div class="code">LS-254</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 24044509957</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-255">
+      <div class="code">LS-255</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054507465</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-256">
+      <div class="code">LS-256</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054500198</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-257">
+      <div class="code">LS-257</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054506785</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-258">
+      <div class="code">LS-258</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054508993</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-259">
+      <div class="code">LS-259</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25014511658</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-26">
+      <div class="code">LS-26</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 190610 4239807</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-260">
+      <div class="code">LS-260</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054500805</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-261">
+      <div class="code">LS-261</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054500834</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-262">
+      <div class="code">LS-262</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054508982</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-263">
+      <div class="code">LS-263</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054506783</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-264">
+      <div class="code">LS-264</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054507297</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-265">
+      <div class="code">LS-265</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054500173</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-266">
+      <div class="code">LS-266</div>
+      <div class="info"><div class="t">Lockstitch · A5E</div>
+        <div class="m">A5E · 25054500806</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-267">
+      <div class="code">LS-267</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6890(MD4) · 20250514643</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-268">
+      <div class="code">LS-268</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6890(MD4) · 20250513359</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-269">
+      <div class="code">LS-269</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6890(MD4) · 20250513347</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-27">
+      <div class="code">LS-27</div>
+      <div class="info"><div class="t">Lockstitch · Jack</div>
+        <div class="m">A3 · 180 2102714707</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-270">
+      <div class="code">LS-270</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6890(MD4) · 20250513384</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-271">
+      <div class="code">LS-271</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6890(MD4) · 20250513377</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-272">
+      <div class="code">LS-272</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6890(MD4) · 20250513379</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-273">
+      <div class="code">LS-273</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6890(MD4) · 20250513358</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-274">
+      <div class="code">LS-274</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6890(MD4) · 20250512987</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-275">
+      <div class="code">LS-275</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6890(MD4) · 20250513383</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-276">
+      <div class="code">LS-276</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6890(MD4) · 20250513373</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="m-row" data-code="LS-277">
+      <div class="code">LS-277</div>
+      <div class="info"><div class="t">Lockstitch · Typical</div>
+        <div class="m">GC6890(MD4) · 20250513372</div></div>
+      <span class="chev">›</span>
+    </div><div class="count-line" style="text-align:center">Showing first 300 of 489. Refine your search.</div></div>
+    </section>
+
+    <!-- DASHBOARD VIEW -->
+    <section id="view-dashboard" class="hidden">
+      <div class="dash-actions">
+        <div class="stat-row" id="dash-stats"></div>
+      </div>
+
+      <div class="doc-section">
+        <div class="sec-head"><h2 data-i18n="maint_due">ការ​ថែទាំ​ដល់​កំណត់</h2>
+          <div class="exp-btns">
+            <button class="btn btn-secondary btn-sm" data-exp="maint-csv" data-i18n="export_csv">នាំចេញ CSV</button>
+            <button class="btn btn-secondary btn-sm" data-exp="maint-xlsx" data-i18n="export_excel">នាំចេញ Excel</button>
+          </div>
+        </div>
+        <div id="dash-due"></div>
+      </div>
+
+      <div class="doc-section">
+        <div class="sec-head"><h2 data-i18n="maint_by">ការ​ថែទាំ​តាម​ខ្សែ និង​ជាង</h2></div>
+        <div id="dash-breakdown"></div>
+      </div>
+
+      <div class="doc-section">
+        <div class="sec-head"><h2 data-i18n="parts_recent">គ្រឿង​បន្លាស់ — ការ​ប្តូរ​ថ្មីៗ</h2>
+          <div class="exp-btns">
+            <button class="btn btn-secondary btn-sm" data-exp="parts-csv" data-i18n="export_csv">នាំចេញ CSV</button>
+            <button class="btn btn-secondary btn-sm" data-exp="parts-xlsx" data-i18n="export_excel">នាំចេញ Excel</button>
+          </div>
+        </div>
+        <div id="dash-parts"></div>
+      </div>
+
+      <div class="doc-section">
+        <div class="sec-head"><h2 data-i18n="recent_activity">សកម្មភាព​ថ្មីៗ</h2></div>
+        <div id="dash-activity"></div>
+      </div>
+    </section>
+
+    <!-- QR PRINT VIEW -->
+    <section id="view-qrprint" class="hidden">
+      <div class="doc-section no-print">
+        <div class="sec-head"><h2 data-i18n="print_qr_labels">បោះពុម្ព​ស្លាក QR</h2>
+          <div class="exp-btns">
+            <button class="btn btn-secondary btn-sm" id="qr-print" data-i18n="print">បោះពុម្ព</button>
+            <button class="btn btn-secondary btn-sm" id="qr-pdf" data-i18n="save_pdf">រក្សាទុក​ជា PDF</button>
+          </div>
+        </div>
+        <div class="mini" style="margin-bottom:10px" data-i18n="qr_hint">ស្លាក​ទំហំ ៣×២ សម ២ ក្នុង​មួយ​ជួរ។ ធីក​ម៉ាស៊ីន​ដែល​ត្រូវការ រួច​បោះពុម្ព ឬ​រក្សាទុក​ជា PDF។</div>
+
+        <div class="qr-controls">
+          <input id="qr-search" data-i18n-ph="search_add" placeholder="ស្វែងរក​ម៉ាស៊ីន​ដើម្បី​បន្ថែម…" style="flex:1;min-width:180px;padding:10px;border:1px solid var(--line);border-radius:8px">
+          <select id="qr-group" style="padding:10px;border:1px solid var(--line);border-radius:8px">
+            <option value="" data-i18n="quick_group">ជ្រើស​ក្រុម​រហ័ស…</option>
+          </select>
+        </div>
+        <div class="qr-selbar">
+          <span id="qr-count" class="mini">0 selected</span>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary btn-sm" id="qr-selall" data-i18n="select_all_shown">ជ្រើស​ទាំងអស់​ដែល​បង្ហាញ</button>
+            <button class="btn btn-secondary btn-sm" id="qr-clear" data-i18n="clear">សម្អាត</button>
+          </div>
+        </div>
+        <div id="qr-picklist" class="qr-picklist"></div>
+      </div>
+
+      <div id="qr-sheet-area" class="qr-sheet-area">
+        <div class="empty" id="qr-empty">No machines selected yet. Tick some above.</div>
+        <div id="qr-labels" class="qr-labels"></div>
+      </div>
+    </section>
+
+    <!-- DETAIL VIEW -->
+    <section id="view-detail" class="hidden">
+      <div class="detail-top">
+        <span class="back" id="back" data-i18n="all_machines">← ម៉ាស៊ីន​ទាំងអស់</span>
+        <button class="btn btn-scan btn-sm" id="scan-btn3" style=""><span class="scan-ic">▣</span> <span data-i18n="scan_next">ស្កេន​បន្ទាប់</span></button>
+      </div>
+      <div class="passport" id="passport"></div>
+
+      <div class="doc-section">
+        <div class="sec-head">
+          <h2 data-i18n="catalog_manuals">កាតាឡុក និង​សៀវភៅ​ណែនាំ</h2>
+          <button class="btn btn-primary btn-sm" id="add-doc" data-i18n="upload_file">+ ផ្ទុក​ឯកសារ</button>
+        </div>
+        <div id="docs-body"></div>
+      </div>
+
+      <div class="doc-section">
+        <div class="sec-head">
+          <h2 data-i18n="spare_parts">គ្រឿង​បន្លាស់</h2>
+          <button class="btn btn-primary btn-sm" id="add-part" data-i18n="add_part">+ បន្ថែម​គ្រឿង​បន្លាស់</button>
+        </div>
+        <div id="parts-body"></div>
+      </div>
+
+      <div class="doc-section">
+        <div class="sec-head">
+          <h2 data-i18n="maint_schedule">កាលវិភាគ​ថែទាំ</h2>
+          <button class="btn btn-primary btn-sm" id="add-task" data-i18n="add_record">+ បន្ថែម​កំណត់ត្រា</button>
+        </div>
+        <div id="maint-body"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- PART SHEET -->
+<div class="backdrop" id="part-sheet"><div class="sheet">
+  <div class="sheet-head"><h3 id="part-title" data-i18n="add_spare_part">បន្ថែម​គ្រឿង​បន្លាស់</h3><button class="x" id="part-close">×</button></div>
+  <div class="field"><label data-i18n="part_name">ឈ្មោះ​គ្រឿង​បន្លាស់</label><input id="p-name" data-i18n-ph="ph_part_name" placeholder="ឧ. ដែក​ម្ជុល"></div>
+  <div class="field two">
+    <div><label data-i18n="part_number">លេខ​គ្រឿង​បន្លាស់</label><input id="p-no" data-i18n-ph="ph_part_no" placeholder="ឧ. NB-100"></div>
+    <div><label data-i18n="quantity">បរិមាណ</label><input id="p-qty" type="number" inputmode="numeric" data-i18n-ph="ph_qty" placeholder="0"></div>
+  </div>
+  <div class="field"><label data-i18n="unit">ឯកតា</label><input id="p-unit" data-i18n-ph="ph_unit" placeholder="ឧ. ដុំ, ឈុត"></div>
+  <div class="field two">
+    <div><label data-i18n="replacement_date">កាលបរិច្ឆេទ​ប្តូរ</label><input id="p-repdate" type="date"></div>
+    <div><label data-i18n="replaced_by">ប្តូរ​ដោយ</label><input id="p-repby" data-i18n-ph="ph_mech" placeholder="ឈ្មោះ​ជាង"></div>
+  </div>
+  <div class="field"><label data-i18n="notes">កំណត់​សម្គាល់</label><textarea id="p-notes" rows="2"></textarea></div>
+  <div class="actions"><button class="btn btn-primary" id="p-save" data-i18n="save">រក្សាទុក</button></div>
+</div></div>
+
+<!-- MAINTENANCE SHEET -->
+<div class="backdrop" id="task-sheet"><div class="sheet">
+  <div class="sheet-head"><h3 id="task-title" data-i18n="add_maint">បន្ថែម​កំណត់ត្រា​ថែទាំ</h3><button class="x" id="task-close">×</button></div>
+  <div class="field"><label data-i18n="date_done">ថ្ងៃ​ធ្វើ</label><input id="t-date" type="date"></div>
+  <div class="field two">
+    <div><label data-i18n="type">ប្រភេទ</label><select id="t-type" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px">
+      <option value="monthly" data-i18n="monthly_mech">ប្រចាំ​ខែ (ជាង)</option>
+      <option value="weekly" data-i18n="weekly_op">ប្រចាំ​សប្តាហ៍ (អ្នក​ប្រើ)</option>
+    </select></div>
+    <div><label data-i18n="line">ខ្សែ</label><input id="t-line" data-i18n-ph="ph_line" placeholder="ឧ. 15"></div>
+  </div>
+  <div class="field"><label data-i18n="mechanic">ជាង</label><input id="t-mech" data-i18n-ph="ph_mech" placeholder="ឈ្មោះ​ជាង"></div>
+  <div class="field"><label data-i18n="checks_done">ការ​ត្រួតពិនិត្យ​ដែល​បាន​ធ្វើ</label>
+    <div id="t-checks" class="check-grid"></div>
+  </div>
+  <div class="field"><label data-i18n="remarks">កំណត់​សម្គាល់</label><textarea id="t-notes" rows="2"></textarea></div>
+  <div class="field"><label data-i18n="next_due_opt">ដល់​កំណត់​បន្ទាប់ (ស្រេច​ចិត្ត)</label><input id="t-next" type="date"></div>
+  <div class="actions"><button class="btn btn-primary" id="t-save" data-i18n="save_record">រក្សាទុក​កំណត់ត្រា</button></div>
+</div></div>
+
+<!-- NAME SHEET -->
+<div class="backdrop" id="name-sheet"><div class="sheet">
+  <div class="sheet-head"><h3 data-i18n="your_name">ឈ្មោះ​អ្នក</h3><button class="x" id="name-close">×</button></div>
+  <div class="field"><label data-i18n="name_hint">ដើម្បី​បង្ហាញ​អ្នក​ដែល​បាន​កែ</label><input id="name-input" data-i18n-ph="ph_name" placeholder="ឧ. ហឿន"></div>
+  <div class="actions"><button class="btn btn-primary" id="name-save" data-i18n="save">រក្សាទុក</button></div>
+</div></div>
+
+<!-- DOC UPLOAD SHEET -->
+<div class="backdrop" id="doc-sheet"><div class="sheet">
+  <div class="sheet-head"><h3 data-i18n="upload_cat">ផ្ទុក​កាតាឡុក / សៀវភៅ​ណែនាំ</h3><button class="x" id="doc-close">×</button></div>
+  <div class="field"><label data-i18n="title">ចំណងជើង</label><input id="d-title" data-i18n-ph="ph_title" placeholder="ឧ. កាតាឡុក​គ្រឿង​បន្លាស់"></div>
+  <div class="field"><label data-i18n="doc_type">ប្រភេទ</label><select id="d-type" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px">
+    <option value="catalog" data-i18n="catalog">កាតាឡុក</option><option value="manual" data-i18n="manual">សៀវភៅ​ណែនាំ</option><option value="other" data-i18n="other">ផ្សេងៗ</option>
+  </select></div>
+  <div class="field"><label data-i18n="applies_to">អនុវត្ត​ចំពោះ</label><select id="d-scope" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px">
+    <option value="model" data-i18n="all_of_model">ម៉ាស៊ីន​ទាំងអស់​នៃ​ម៉ូដែល​នេះ</option>
+    <option value="machine" data-i18n="only_this">តែ​ម៉ាស៊ីន​នេះ</option>
+  </select>
+  <div class="upd" id="d-scope-hint" style="margin-top:6px"></div></div>
+  <div class="field"><label data-i18n="file_label">ឯកសារ (PDF, រូបភាព, ឬ Word)</label>
+    <input id="d-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,application/pdf,image/*"></div>
+  <div class="upd" id="d-progress" style="margin-bottom:8px"></div>
+  <div class="actions"><button class="btn btn-primary" id="d-save" data-i18n="upload">ផ្ទុក</button></div>
+</div></div>
+
+<!-- ADD MACHINE SHEET -->
+<div class="backdrop" id="machine-sheet"><div class="sheet">
+  <div class="sheet-head"><h3 data-i18n="add_new_machine">បន្ថែម​ម៉ាស៊ីន​ថ្មី</h3><button class="x" id="machine-close">×</button></div>
+  <div class="field"><label data-i18n="machine_code_req">លេខកូដ​ម៉ាស៊ីន (ចាំបាច់ ឯកលក្ខណៈ)</label><input id="nm-code" data-i18n-ph="ph_code" placeholder="ឧ. LS-999"></div>
+  <div class="field two">
+    <div><label data-i18n="machine_type">ប្រភេទ​ម៉ាស៊ីន</label><input id="nm-type" data-i18n-ph="ph_type" placeholder="ឧ. Lockstitch"></div>
+    <div><label data-i18n="brand">ម៉ាក</label><input id="nm-brand" data-i18n-ph="ph_brand" placeholder="ឧ. Jack"></div>
+  </div>
+  <div class="field two">
+    <div><label data-i18n="model">ម៉ូដែល</label><input id="nm-model" data-i18n-ph="ph_model" placeholder="ឧ. A5E"></div>
+    <div><label data-i18n="serial">លេខ​ស៊េរី</label><input id="nm-serial"></div>
+  </div>
+  <div class="field two">
+    <div><label data-i18n="fixed_asset">ទ្រព្យ​សកម្ម</label><input id="nm-fa"></div>
+    <div><label data-i18n="source">ប្រភព</label><select id="nm-source" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px">
+      <option value="stock" data-i18n="stock">ស្តុក</option><option value="rental" data-i18n="rental">ជួល</option>
+    </select></div>
+  </div>
+  <div class="actions"><button class="btn btn-primary" id="nm-save" data-i18n="add_new_machine">បន្ថែម​ម៉ាស៊ីន​ថ្មី</button></div>
+</div></div>
+
+<!-- SCANNER OVERLAY -->
+<div class="scan-overlay" id="scan-overlay">
+  <div class="scan-box">
+    <div class="scan-head">
+      <h3 data-i18n="scan_machine">ស្កេន QR ម៉ាស៊ីន</h3>
+      <button class="x" id="scan-close">×</button>
+    </div>
+    <div class="scan-hint" data-i18n="scan_hint2">តម្រង់​កាមេរ៉ា​ទៅ​ស្លាក QR របស់​ម៉ាស៊ីន</div>
+    <div id="scan-reader" class="scan-reader">
+      <div class="scan-frame" id="scan-frame"></div>
+      <button class="scan-torch" id="scan-torch" style="display:none" title="Light">🔦</button>
+    </div>
+    <div class="scan-zoom" id="scan-zoom-wrap" style="display:none">
+      <span class="scan-zoom-ic">➖</span>
+      <input type="range" id="scan-zoom" min="1" max="5" step="0.1" value="3">
+      <span class="scan-zoom-ic">➕</span>
+    </div>
+    <div class="scan-tip" id="scan-tip" data-i18n="scan_tip">ស្លាក​តូច? កាន់​ចម្ងាយ​ប្រហែល ១០ ស.ម ប្រើ​គ្រាប់​រំកិល​ពង្រីក និង​កាន់​ឲ្យ​នឹង​ក្នុង​ពន្លឺ​ល្អ។</div>
+    <div class="scan-result" id="scan-result"></div>
+    <div class="scan-actions">
+      <button class="btn btn-primary" id="scan-next" style="display:none" data-i18n="scan_next">ស្កេន​បន្ទាប់</button>
+    </div>
+    <div class="scan-manual" id="scan-manual-wrap">
+      <div class="scan-or" data-i18n="scan_or">— ឬ​វាយ​លេខ​ទ្រព្យ​សកម្ម —</div>
+      <div class="scan-manual-row">
+        <input id="scan-manual-input" data-i18n-ph="scan_manual_ph" placeholder="ឧ. FM-23-06-100">
+        <button class="btn btn-secondary btn-sm" id="scan-manual-go" data-i18n="scan_go">រុករក</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===================== CONFIG =====================
+const SUPABASE_URL = "https://febeqqrnjurnokflxyqx.supabase.co";
+const SUPABASE_KEY = "sb_publishable_cNSBIg9gkCjcIdxB8PB_ig_rbLrrhSR";
+// ==================================================
+
+const $ = id => document.getElementById(id);
+
+// ================= LANGUAGE (EN / KM) =================
+const I18N = {
+  en: {
+    subtitle: "Machine Documents",
+    setName: "Set your name", you: "You",
+    nav_machines: "Machines", nav_dashboard: "Dashboard", nav_qr: "Print QR",
+    search_machines: "Search machine by code, type, brand, model, serial…",
+    loading: "Loading…",
+    add_machine: "+ Add machine",
+    all_machines: "← All machines",
+    catalog_manuals: "Catalog & manuals", upload_file: "+ Upload file",
+    spare_parts: "Spare parts", add_part: "+ Add part",
+    maint_schedule: "Maintenance schedule", add_record: "+ Add record",
+    // dashboard
+    maint_due: "Maintenance due", export_csv: "Export CSV", export_excel: "Export Excel",
+    maint_by: "Maintenance by line & mechanic",
+    parts_recent: "Spare parts — recent replacements",
+    recent_activity: "Recent activity",
+    st_overdue: "Overdue", st_due7: "Due within 7 days", st_this_month: "Maint. this month",
+    st_total_records: "Maint. records total", st_parts_month: "Parts replaced this month", st_parts_total: "Spare parts total",
+    col_machine: "Machine", col_type: "Type", col_mechanic: "Mechanic", col_nextdue: "Next due",
+    col_part: "Part", col_replaced: "Replaced", col_by: "By", col_checks: "Checks",
+    by_line: "By line", by_mechanic: "By mechanic",
+    nothing_due: "Nothing overdue or due soon. 👍",
+    no_maint: "No maintenance records yet.",
+    no_parts_rep: "No part replacements recorded yet.",
+    no_activity: "No activity yet.",
+    // qr print
+    print_qr_labels: "Print QR labels", print: "Print", save_pdf: "Save as PDF",
+    qr_hint: "Labels are 3×2 cm, 2 per row. Tick the machines you want, then Print or Save as PDF.",
+    search_add: "Search machines to add…", quick_group: "Quick select group…",
+    select_all_shown: "Select all shown", clear: "Clear", selected: "selected",
+    qr_empty: "No machines selected yet. Tick some above.",
+    // part sheet
+    add_spare_part: "Add spare part", edit_spare_part: "Edit spare part",
+    part_name: "Part name", part_number: "Part number", quantity: "Quantity",
+    unit: "Unit", replacement_date: "Replacement date", replaced_by: "Replaced by",
+    notes: "Notes", save: "Save",
+    ph_part_name: "e.g. Needle bar", ph_part_no: "e.g. NB-100", ph_qty: "0", ph_unit: "e.g. pcs, set", ph_mech: "mechanic name",
+    // maintenance sheet
+    add_maint: "Add maintenance record", edit_maint: "Edit maintenance record",
+    date_done: "Date done", type: "Type", line: "Line", mechanic: "Mechanic",
+    checks_done: "Checks done", remarks: "Remarks", next_due_opt: "Next due (optional)",
+    save_record: "Save record",
+    monthly_mech: "Monthly (mechanic)", weekly_op: "Weekly (operator)",
+    ph_line: "e.g. 15",
+    // checks
+    chk_clean_oil: "Clean / oil change", chk_spare_parts: "Spare parts", chk_air: "Air system",
+    chk_electrical: "Electrical system", chk_presser: "Presser foot / feed dog", chk_guards: "Safety guards",
+    // name sheet
+    your_name: "Your name", name_hint: "So edits show who made them", ph_name: "e.g. Hoeurn",
+    // doc upload sheet
+    upload_cat: "Upload catalog / manual", title: "Title", ph_title: "e.g. Parts catalog, User manual",
+    doc_type: "Type", catalog: "Catalog", manual: "Manual", other: "Other",
+    applies_to: "Applies to", all_of_model: "All machines of this model", only_this: "Only this machine",
+    file_label: "File (PDF, image, or Word)", upload: "Upload",
+    // add machine sheet
+    add_new_machine: "Add new machine", machine_code_req: "Machine code (required, unique)",
+    machine_type: "Machine type", brand: "Brand", model: "Model", serial: "Serial number",
+    fixed_asset: "Fixed asset", source: "Source", stock: "Stock", rental: "Rental",
+    ph_code: "e.g. LS-999", ph_type: "e.g. Lockstitch", ph_brand: "e.g. Jack", ph_model: "e.g. A5E",
+    // passport / misc
+    scan_hint: "Scan with a phone camera to open this machine", print_qr_label: "Print QR label",
+    // toasts / messages
+    m_saved: "Saved", m_deleted: "Deleted", m_uploaded: "Uploaded",
+    m_part_req: "Part name is required", m_task_req: "Date done is required",
+    m_title_req: "Enter a title", m_file_req: "Choose a file",
+    m_code_req: "Machine code is required", m_code_exists: "That code already exists",
+    m_select_machine: "Select at least one machine", m_added: "added",
+    no_catalog: "No catalog or manual yet.",
+    no_parts: "No spare parts recorded yet. Tap “Add part”.",
+    no_records: "No maintenance records yet. Tap “Add record”.",
+    machines_word: "machines", machine_word: "machine",
+    scan: "Scan", scan_machine: "Scan machine QR", scan_hint2: "Point the camera at a machine's QR label",
+    scan_next: "Scan next", scan_close: "Close", scan_stop: "Stop",
+    scan_not_found: "Machine not found:", scan_no_cam: "Camera not available. Check permissions or use search.",
+    scan_bad: "That QR is not a machine code.",
+    scan_or: "— or type the asset code —", scan_manual_ph: "e.g. FM-23-06-100", scan_go: "Go",
+    scan_tip: "Small sticker? Hold ~10 cm away, use the zoom slider, keep steady in good light.",
+  },
+  km: {
+    subtitle: "ឯកសារ​ម៉ាស៊ីន",
+    setName: "កំណត់​ឈ្មោះ​អ្នក", you: "អ្នក",
+    nav_machines: "ម៉ាស៊ីន", nav_dashboard: "ផ្ទាំង​គ្រប់គ្រង", nav_qr: "បោះពុម្ព QR",
+    search_machines: "ស្វែងរក​ម៉ាស៊ីន​តាម​លេខកូដ ប្រភេទ ម៉ាក ម៉ូដែល ស៊េរី…",
+    loading: "កំពុង​ផ្ទុក…",
+    add_machine: "+ បន្ថែម​ម៉ាស៊ីន",
+    all_machines: "← ម៉ាស៊ីន​ទាំងអស់",
+    catalog_manuals: "កាតាឡុក និង​សៀវភៅ​ណែនាំ", upload_file: "+ ផ្ទុក​ឯកសារ",
+    spare_parts: "គ្រឿង​បន្លាស់", add_part: "+ បន្ថែម​គ្រឿង​បន្លាស់",
+    maint_schedule: "កាលវិភាគ​ថែទាំ", add_record: "+ បន្ថែម​កំណត់ត្រា",
+    maint_due: "ការ​ថែទាំ​ដល់​កំណត់", export_csv: "នាំចេញ CSV", export_excel: "នាំចេញ Excel",
+    maint_by: "ការ​ថែទាំ​តាម​ខ្សែ និង​ជាង",
+    parts_recent: "គ្រឿង​បន្លាស់ — ការ​ប្តូរ​ថ្មីៗ",
+    recent_activity: "សកម្មភាព​ថ្មីៗ",
+    st_overdue: "ហួស​កំណត់", st_due7: "ដល់​ក្នុង ៧ ថ្ងៃ", st_this_month: "ថែទាំ​ខែ​នេះ",
+    st_total_records: "កំណត់ត្រា​ថែទាំ​សរុប", st_parts_month: "គ្រឿង​បន្លាស់​ប្តូរ​ខែ​នេះ", st_parts_total: "គ្រឿង​បន្លាស់​សរុប",
+    col_machine: "ម៉ាស៊ីន", col_type: "ប្រភេទ", col_mechanic: "ជាង", col_nextdue: "ដល់​កំណត់​បន្ទាប់",
+    col_part: "គ្រឿង​បន្លាស់", col_replaced: "បាន​ប្តូរ", col_by: "ដោយ", col_checks: "ការ​ត្រួតពិនិត្យ",
+    by_line: "តាម​ខ្សែ", by_mechanic: "តាម​ជាង",
+    nothing_due: "គ្មាន​អ្វី​ហួស​កំណត់ ឬ​ជិត​ដល់​ទេ។ 👍",
+    no_maint: "មិន​ទាន់​មាន​កំណត់ត្រា​ថែទាំ​ទេ។",
+    no_parts_rep: "មិន​ទាន់​មាន​ការ​ប្តូរ​គ្រឿង​បន្លាស់​ទេ។",
+    no_activity: "មិន​ទាន់​មាន​សកម្មភាព​ទេ។",
+    print_qr_labels: "បោះពុម្ព​ស្លាក QR", print: "បោះពុម្ព", save_pdf: "រក្សាទុក​ជា PDF",
+    qr_hint: "ស្លាក​ទំហំ ៣×២ សម ២ ក្នុង​មួយ​ជួរ។ ធីក​ម៉ាស៊ីន​ដែល​ត្រូវការ រួច​បោះពុម្ព ឬ​រក្សាទុក​ជា PDF។",
+    search_add: "ស្វែងរក​ម៉ាស៊ីន​ដើម្បី​បន្ថែម…", quick_group: "ជ្រើស​ក្រុម​រហ័ស…",
+    select_all_shown: "ជ្រើស​ទាំងអស់​ដែល​បង្ហាញ", clear: "សម្អាត", selected: "បាន​ជ្រើស",
+    qr_empty: "មិន​ទាន់​បាន​ជ្រើស​ម៉ាស៊ីន​ទេ។ សូម​ធីក​ខាងលើ។",
+    add_spare_part: "បន្ថែម​គ្រឿង​បន្លាស់", edit_spare_part: "កែ​គ្រឿង​បន្លាស់",
+    part_name: "ឈ្មោះ​គ្រឿង​បន្លាស់", part_number: "លេខ​គ្រឿង​បន្លាស់", quantity: "បរិមាណ",
+    unit: "ឯកតា", replacement_date: "កាលបរិច្ឆេទ​ប្តូរ", replaced_by: "ប្តូរ​ដោយ",
+    notes: "កំណត់​សម្គាល់", save: "រក្សាទុក",
+    ph_part_name: "ឧ. ដែក​ម្ជុល", ph_part_no: "ឧ. NB-100", ph_qty: "0", ph_unit: "ឧ. ដុំ, ឈុត", ph_mech: "ឈ្មោះ​ជាង",
+    add_maint: "បន្ថែម​កំណត់ត្រា​ថែទាំ", edit_maint: "កែ​កំណត់ត្រា​ថែទាំ",
+    date_done: "ថ្ងៃ​ធ្វើ", type: "ប្រភេទ", line: "ខ្សែ", mechanic: "ជាង",
+    checks_done: "ការ​ត្រួតពិនិត្យ​ដែល​បាន​ធ្វើ", remarks: "កំណត់​សម្គាល់", next_due_opt: "ដល់​កំណត់​បន្ទាប់ (ស្រេច​ចិត្ត)",
+    save_record: "រក្សាទុក​កំណត់ត្រា",
+    monthly_mech: "ប្រចាំ​ខែ (ជាង)", weekly_op: "ប្រចាំ​សប្តាហ៍ (អ្នក​ប្រើ)",
+    ph_line: "ឧ. 15",
+    chk_clean_oil: "សម្អាត / ប្តូរ​ប្រេង", chk_spare_parts: "គ្រឿង​បន្លាស់", chk_air: "ប្រព័ន្ធ​ខ្យល់",
+    chk_electrical: "ប្រព័ន្ធ​អគ្គិសនី", chk_presser: "ជើង​សង្កត់ / ធ្មេញ​រុញ", chk_guards: "ការពារ​សុវត្ថិភាព",
+    your_name: "ឈ្មោះ​អ្នក", name_hint: "ដើម្បី​បង្ហាញ​អ្នក​ដែល​បាន​កែ", ph_name: "ឧ. ហឿន",
+    upload_cat: "ផ្ទុក​កាតាឡុក / សៀវភៅ​ណែនាំ", title: "ចំណងជើង", ph_title: "ឧ. កាតាឡុក​គ្រឿង​បន្លាស់",
+    doc_type: "ប្រភេទ", catalog: "កាតាឡុក", manual: "សៀវភៅ​ណែនាំ", other: "ផ្សេងៗ",
+    applies_to: "អនុវត្ត​ចំពោះ", all_of_model: "ម៉ាស៊ីន​ទាំងអស់​នៃ​ម៉ូដែល​នេះ", only_this: "តែ​ម៉ាស៊ីន​នេះ",
+    file_label: "ឯកសារ (PDF, រូបភាព, ឬ Word)", upload: "ផ្ទុក",
+    add_new_machine: "បន្ថែម​ម៉ាស៊ីន​ថ្មី", machine_code_req: "លេខកូដ​ម៉ាស៊ីន (ចាំបាច់ ឯកលក្ខណៈ)",
+    machine_type: "ប្រភេទ​ម៉ាស៊ីន", brand: "ម៉ាក", model: "ម៉ូដែល", serial: "លេខ​ស៊េរី",
+    fixed_asset: "ទ្រព្យ​សកម្ម", source: "ប្រភព", stock: "ស្តុក", rental: "ជួល",
+    ph_code: "ឧ. LS-999", ph_type: "ឧ. Lockstitch", ph_brand: "ឧ. Jack", ph_model: "ឧ. A5E",
+    scan_hint: "ស្កេន​ដោយ​កាមេរ៉ា​ទូរស័ព្ទ​ដើម្បី​បើក​ម៉ាស៊ីន​នេះ", print_qr_label: "បោះពុម្ព​ស្លាក QR",
+    m_saved: "បាន​រក្សាទុក", m_deleted: "បាន​លុប", m_uploaded: "បាន​ផ្ទុក",
+    m_part_req: "ត្រូវ​បញ្ចូល​ឈ្មោះ​គ្រឿង​បន្លាស់", m_task_req: "ត្រូវ​បញ្ចូល​ថ្ងៃ​ធ្វើ",
+    m_title_req: "សូម​បញ្ចូល​ចំណងជើង", m_file_req: "សូម​ជ្រើស​ឯកសារ",
+    m_code_req: "ត្រូវ​បញ្ចូល​លេខកូដ​ម៉ាស៊ីន", m_code_exists: "លេខកូដ​នេះ​មាន​រួច​ហើយ",
+    m_select_machine: "សូម​ជ្រើស​ម៉ាស៊ីន​យ៉ាង​ហោច​មួយ", m_added: "បាន​បន្ថែម",
+    no_catalog: "មិន​ទាន់​មាន​កាតាឡុក ឬ​សៀវភៅ​ណែនាំ​ទេ។",
+    no_parts: "មិន​ទាន់​មាន​គ្រឿង​បន្លាស់​ទេ។ ចុច “បន្ថែម​គ្រឿង​បន្លាស់”។",
+    no_records: "មិន​ទាន់​មាន​កំណត់ត្រា​ថែទាំ​ទេ។ ចុច “បន្ថែម​កំណត់ត្រា”។",
+    machines_word: "ម៉ាស៊ីន", machine_word: "ម៉ាស៊ីន",
+    scan: "ស្កេន", scan_machine: "ស្កេន QR ម៉ាស៊ីន", scan_hint2: "តម្រង់​កាមេរ៉ា​ទៅ​ស្លាក QR របស់​ម៉ាស៊ីន",
+    scan_next: "ស្កេន​បន្ទាប់", scan_close: "បិទ", scan_stop: "ឈប់",
+    scan_not_found: "រក​ម៉ាស៊ីន​មិន​ឃើញ៖", scan_no_cam: "កាមេរ៉ា​មិន​ដំណើរការ។ ពិនិត្យ​ការ​អនុញ្ញាត ឬ​ប្រើ​ការ​ស្វែងរក។",
+    scan_bad: "QR នេះ​មិន​មែន​ជា​លេខកូដ​ម៉ាស៊ីន​ទេ។",
+    scan_or: "— ឬ​វាយ​លេខ​ទ្រព្យ​សកម្ម —", scan_manual_ph: "ឧ. FM-23-06-100", scan_go: "រុករក",
+    scan_tip: "ស្លាក​តូច? កាន់​ចម្ងាយ​ប្រហែល ១០ ស.ម ប្រើ​គ្រាប់​រំកិល​ពង្រីក និង​កាន់​ឲ្យ​នឹង​ក្នុង​ពន្លឺ​ល្អ។",
+  }
+};
+let LANG = localStorage.getItem('docs_lang') || 'en';
+function TX(key){ return (I18N[LANG] && I18N[LANG][key]) || (I18N.en[key] || key); }
+function applyLang(){
+  // text content by data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = TX(el.getAttribute('data-i18n')); });
+  // placeholders by data-i18n-ph
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.setAttribute('placeholder', TX(el.getAttribute('data-i18n-ph'))); });
+  // language button label
+  const lb = $('lang-btn'); if (lb) lb.textContent = LANG==='en' ? 'ខ្មែរ' : 'EN';
+  document.documentElement.setAttribute('lang', LANG);
+  // refresh dynamic views if present
+  try { if (typeof refreshWho==='function') refreshWho(); } catch(e){}
+  try { if (CURRENT) loadDocs(CURRENT.code); } catch(e){}
+  try { if (!$('view-list').classList.contains('hidden')) renderList(); } catch(e){}
+  try { if (!$('view-dashboard').classList.contains('hidden')) renderDashboard(); } catch(e){}
+  try { if (!$('view-qrprint').classList.contains('hidden')) { renderQrPicklist(); updateQrCount(); } } catch(e){}
+}
+function toggleLang(){ LANG = LANG==='en' ? 'km' : 'en'; localStorage.setItem('docs_lang', LANG); applyLang(); }
+
+// ================= QR SCANNER (in-app camera) =================
+let qrScanner = null, scanRunning = false;
+// Extract a machine code from a scanned QR value (full ?m=CODE url OR bare code)
+function codeFromScan(text){
+  if (!text) return null;
+  text = text.trim();
+  // try to parse ?m= from a URL
+  try {
+    if (text.includes('?')) {
+      const qs = text.substring(text.indexOf('?')+1);
+      const params = new URLSearchParams(qs);
+      if (params.get('m')) return params.get('m').trim();
+    }
+  } catch(e){}
+  // otherwise treat the whole thing as a code (if it has no spaces/newlines)
+  if (!/\s/.test(text) && text.length <= 40) return text;
+  return null;
+}
+function showScanBtns(){
+  // show scan buttons if the browser can access a camera AND we have a decoder
+  const hasCam = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  const hasDecoder = ('BarcodeDetector' in window) || (typeof jsQR !== 'undefined');
+  const on = hasCam && hasDecoder;
+  ['scan-btn','scan-btn2','scan-btn3'].forEach(id=>{ const b=$(id); if (b) b.style.display = on ? '' : 'none'; });
+}
+window.addEventListener('lib-scanner', showScanBtns);
+
+// --- Self-managed camera + frame decoder (reliable on iPhone Safari) ---
+let camStream = null, scanVideo = null, scanTimer = null, barcodeDetector = null;
+
+function openScanner(){
+  const hasCam = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  if (!hasCam){ toast(TX('scan_no_cam'),'err'); return; }
+  $('scan-result').textContent = '';
+  $('scan-result').style.color='var(--grey)';
+  $('scan-next').style.display = 'none';
+  if ($('scan-manual-wrap')) $('scan-manual-wrap').style.display = '';   // always offer manual entry
+  if ($('scan-manual-input')) $('scan-manual-input').value = '';
+  $('scan-overlay').classList.add('open');
+  startScan();
+}
+
+async function startScan(){
+  $('scan-result').style.color='var(--grey)';
+  $('scan-result').textContent = '';
+  $('scan-next').style.display = 'none';
+  const readerEl = $('scan-reader');
+  // remove any previous video but KEEP the aiming frame + torch button
+  const oldV = readerEl.querySelector('video'); if (oldV) oldV.remove();
+  scanRunning = true;
+
+  // 1) Build our own video element with iOS attributes set BEFORE the stream attaches.
+  scanVideo = document.createElement('video');
+  scanVideo.setAttribute('playsinline','true');
+  scanVideo.setAttribute('webkit-playsinline','true');
+  scanVideo.setAttribute('autoplay','true');
+  scanVideo.setAttribute('muted','true');
+  scanVideo.muted = true; scanVideo.playsInline = true;
+  scanVideo.style.width = '100%'; scanVideo.style.height='auto';
+  scanVideo.style.minHeight='240px'; scanVideo.style.objectFit='cover'; scanVideo.style.display='block';
+  readerEl.insertBefore(scanVideo, readerEl.firstChild);
+
+  // 2) Request the back camera directly. Higher resolution helps small (2×3 cm) QR codes.
+  const tries = [
+    { video: { facingMode: { exact: "environment" }, width:{ideal:1920}, height:{ideal:1080} }, audio:false },
+    { video: { facingMode: "environment", width:{ideal:1920}, height:{ideal:1080} }, audio:false },
+    { video: { facingMode: "environment", width:{ideal:1280}, height:{ideal:720} }, audio:false },
+    { video: { facingMode: "environment" }, audio:false },
+    { video: true, audio:false }
+  ];
+  let stream = null, lastErr=null;
+  for (const c of tries){
+    try { stream = await navigator.mediaDevices.getUserMedia(c); if (stream) break; }
+    catch(e){ lastErr = e; }
+  }
+  if (!stream){
+    scanRunning = false;
+    $('scan-result').style.color='var(--err)';
+    $('scan-result').textContent = TX('scan_no_cam');
+    if ($('scan-manual-wrap')) $('scan-manual-wrap').style.display='';
+    return;
+  }
+  camStream = stream;
+  scanVideo.srcObject = stream;
+  const pr = scanVideo.play(); if (pr && pr.catch) pr.catch(()=>{});
+
+  // 3) Tune the track for small labels: continuous near-focus + stronger zoom.
+  try {
+    const track = stream.getVideoTracks()[0];
+    if (track && track.getCapabilities){
+      const caps = track.getCapabilities();
+      const adv = [];
+      if (caps.focusMode && caps.focusMode.includes && caps.focusMode.includes('continuous')) adv.push({ focusMode:'continuous' });
+      // near focus distance (small stickers are held close)
+      if (caps.focusDistance && typeof caps.focusDistance.min === 'number') adv.push({ focusDistance: caps.focusDistance.min });
+      // apply a stronger zoom to enlarge a small QR (helps decoding a lot)
+      if (caps.zoom && typeof caps.zoom.max === 'number'){
+        const zmin = caps.zoom.min||1, zmax = caps.zoom.max;
+        const z = Math.min(zmax, Math.max(zmin, zmin * 3));   // ~3× for small labels
+        adv.push({ zoom: z });
+        const zw = $('scan-zoom-wrap'), zs = $('scan-zoom');
+        if (zw && zs){
+          zs.min = zmin; zs.max = zmax; zs.step = (zmax-zmin)/40 || 0.1; zs.value = z;
+          zw.style.display = 'flex';
+          zs.oninput = ()=>{ try { track.applyConstraints({ advanced: [{ zoom: parseFloat(zs.value) }] }).catch(()=>{}); } catch(e){} };
+        }
+      } else {
+        const zw = $('scan-zoom-wrap'); if (zw) zw.style.display='none';
+      }
+      if (adv.length) track.applyConstraints({ advanced: adv }).catch(()=>{});
+
+      // Torch / flashlight toggle (great in dim factory light)
+      const tb = $('scan-torch');
+      if (tb){
+        if (caps.torch){
+          let torchOn = false;
+          tb.style.display = '';
+          tb.onclick = ()=>{ torchOn=!torchOn; try{ track.applyConstraints({ advanced:[{ torch: torchOn }] }).catch(()=>{}); }catch(e){} tb.style.background = torchOn?'rgba(31,122,107,.9)':'rgba(0,0,0,.5)'; };
+        } else { tb.style.display='none'; }
+      }
+
+      // Tap-to-focus: on tap, do a single-shot focus then return to continuous
+      scanVideo.addEventListener('click', ()=>{
+        const p=scanVideo.play(); if(p&&p.catch)p.catch(()=>{});
+        try {
+          if (caps.focusMode && caps.focusMode.includes && caps.focusMode.includes('single-shot')){
+            track.applyConstraints({ advanced:[{ focusMode:'single-shot' }] })
+              .then(()=>setTimeout(()=>{ if(caps.focusMode.includes('continuous')) track.applyConstraints({ advanced:[{ focusMode:'continuous' }] }).catch(()=>{}); }, 700))
+              .catch(()=>{});
+          }
+        } catch(e){}
+      });
+    } else {
+      const zw=$('scan-zoom-wrap'); if(zw) zw.style.display='none';
+      const tb=$('scan-torch'); if(tb) tb.style.display='none';
+      scanVideo.addEventListener('click', ()=>{ const p=scanVideo.play(); if(p&&p.catch)p.catch(()=>{}); });
+    }
+  } catch(e){}
+
+  // 4) Start decoding frames.
+  startDecodeLoop();
+}
+
+async function startDecodeLoop(){
+  // BarcodeDetector is fast when it truly works (mainly iOS). On many Android builds it
+  // exists but silently returns nothing — so we ALWAYS run jsQR as the reliable decoder,
+  // and only use BarcodeDetector as a bonus that auto-disables if it produces nothing.
+  barcodeDetector = null;
+  let bdOk = false, bdTries = 0;
+  if ('BarcodeDetector' in window){
+    try { barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] }); }
+    catch(e){ barcodeDetector = null; }
+  }
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+  async function tick(){
+    if (!scanRunning || !scanVideo){ return; }
+    try {
+      if (scanVideo.readyState >= 2 && scanVideo.videoWidth){
+        const vw = scanVideo.videoWidth, vh = scanVideo.videoHeight;
+        const side = Math.floor(Math.min(vw, vh) * 0.7);
+        const sx = Math.floor((vw - side)/2), sy = Math.floor((vh - side)/2);
+
+        // draw the centre crop once — used by both decoders
+        canvas.width = side; canvas.height = side;
+        ctx.drawImage(scanVideo, sx, sy, side, side, 0, 0, side, side);
+
+        // (a) Bonus fast path: BarcodeDetector — but give up on it after ~12 empty tries
+        if (barcodeDetector && bdTries < 12){
+          try {
+            let codes = await barcodeDetector.detect(canvas);
+            if (codes && codes.length && codes[0].rawValue){ bdOk = true; handleDecoded(codes[0].rawValue); return; }
+            codes = await barcodeDetector.detect(scanVideo);
+            if (codes && codes.length && codes[0].rawValue){ bdOk = true; handleDecoded(codes[0].rawValue); return; }
+          } catch(e){ /* detector unavailable */ }
+          if (!bdOk){ bdTries++; if (bdTries >= 12) barcodeDetector = null; }  // stop relying on it
+        }
+
+        // (b) Reliable path: jsQR on the centre crop (works the same on every phone)
+        if (typeof jsQR !== 'undefined'){
+          const img = ctx.getImageData(0, 0, side, side);
+          let res = jsQR(img.data, side, side, { inversionAttempts: "attemptBoth" });
+          if (res && res.data){ handleDecoded(res.data); return; }
+          // occasional full-frame pass in case the sticker is off-centre
+          if ((tick._n = (tick._n||0)+1) % 3 === 0){
+            canvas.width = vw; canvas.height = vh;
+            ctx.drawImage(scanVideo, 0, 0, vw, vh);
+            const full = ctx.getImageData(0, 0, vw, vh);
+            res = jsQR(full.data, vw, vh, { inversionAttempts: "attemptBoth" });
+            if (res && res.data){ handleDecoded(res.data); return; }
+          }
+        }
+      }
+    } catch(e){ /* ignore per-frame errors */ }
+    scanTimer = setTimeout(tick, 80);
+  }
+  tick();
+}
+
+function handleDecoded(raw){
+  if (!scanRunning) return;
+  resolveScan(raw, true);
+}
+
+async function stopScan(){
+  scanRunning = false;
+  if (scanTimer){ clearTimeout(scanTimer); scanTimer = null; }
+  try {
+    if (camStream){ camStream.getTracks().forEach(t=>{ try{ t.stop(); }catch(e){} }); }
+  } catch(e){}
+  camStream = null;
+  if (scanVideo){ try { scanVideo.srcObject = null; } catch(e){} scanVideo = null; }
+  barcodeDetector = null;
+}
+// Find a machine by scanned/typed value: try fixed_asset (asset code) first, then machine code.
+// Forgiving: ignores case, spaces, and separator differences (-, /, .).
+function normCode(s){ return String(s||'').toLowerCase().replace(/[\s\-\/._]/g,''); }
+function findByScan(val){
+  if (!val) return null;
+  const v = String(val).trim();
+  const nv = normCode(v);
+  if (!nv) return null;
+  // 1) asset code exact, then normalized
+  let m = MACHINES.find(x => (x.fixed_asset||'') === v);
+  if (!m) m = MACHINES.find(x => normCode(x.fixed_asset) === nv);
+  // 2) machine code exact, then normalized (fallback for the app's own labels)
+  if (!m) m = MACHINES.find(x => x.code === v);
+  if (!m) m = MACHINES.find(x => normCode(x.code) === nv);
+  return m || null;
+}
+// Open a machine found from scan/manual, closing the overlay.
+function openFromScan(m){
+  $('scan-overlay').classList.remove('open');
+  document.querySelectorAll('#topnav button').forEach(b=>b.classList.remove('active'));
+  const mb = document.querySelector('#topnav button[data-nav="machines"]'); if (mb) mb.classList.add('active');
+  $('view-dashboard').classList.add('hidden'); $('view-qrprint').classList.add('hidden');
+  openMachine(m.code);
+  toast(m.code, 'ok');
+}
+// Resolve a raw value (from camera or manual box) -> open machine or show error.
+async function resolveScan(raw, fromCamera){
+  const code = codeFromScan(raw) || String(raw||'').trim();
+  if (fromCamera) await stopScan();
+  if (!code){ $('scan-result').style.color='var(--err)'; $('scan-result').textContent = TX('scan_bad'); $('scan-next').style.display=fromCamera?'':'none'; return; }
+  const m = findByScan(code);
+  if (!m){ $('scan-result').style.color='var(--err)'; $('scan-result').textContent = TX('scan_not_found')+' '+code; $('scan-next').style.display=fromCamera?'':'none'; return; }
+  openFromScan(m);
+}
+// wire buttons
+if ($('scan-btn')) $('scan-btn').onclick = openScanner;
+if ($('scan-btn2')) $('scan-btn2').onclick = openScanner;
+if ($('scan-btn3')) $('scan-btn3').onclick = openScanner;
+$('scan-close').onclick = async ()=>{ await stopScan(); $('scan-overlay').classList.remove('open'); };
+$('scan-next').onclick = ()=>startScan();
+// manual entry fallback
+if ($('scan-manual-go')) $('scan-manual-go').onclick = async ()=>{
+  const v = $('scan-manual-input').value.trim(); if (!v) return;
+  await stopScan();
+  await resolveScan(v, false);
+};
+if ($('scan-manual-input')) $('scan-manual-input').addEventListener('keydown', e=>{ if(e.key==='Enter') $('scan-manual-go').click(); });
+// hide scan buttons until the library confirms it loaded
+showScanBtns();
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+if (SUPABASE_URL.includes('PASTE_YOUR') || SUPABASE_KEY.includes('PASTE_YOUR')){
+  document.body.innerHTML = '<div class="setup-warn"><h2>Setup not complete</h2><p>Open this file in a text editor and paste your Supabase Project URL and publishable key into the CONFIG section near the top of the script, then re-deploy.</p></div>';
+  throw new Error('config');
+}
+
+let sb;
+function whenSupabaseReady(cb){
+  if (window.supabase && window.supabase.createClient){ cb(); return; }
+  if (window.__libs && window.__libs.supabase === false && window.__loadTried){
+    showLibError(); return;
+  }
+  // wait for the loader event, with a timeout fallback
+  let done=false;
+  window.addEventListener('lib-supabase', function(){
+    if(done) return; done=true;
+    if (window.supabase && window.supabase.createClient) cb(); else showLibError();
+  });
+  setTimeout(function(){
+    if(done) return; done=true;
+    if (window.supabase && window.supabase.createClient) cb(); else showLibError();
+  }, 12000);
+}
+function showLibError(){
+  document.body.innerHTML = '<div class="setup-warn"><h2>Could not load a required library</h2><p>The app needs internet access to load Supabase. Please check the connection and refresh. If this factory network blocks outside sites, ask IT to allow <b>unpkg.com</b>, <b>cdn.jsdelivr.net</b>, and <b>cdnjs.cloudflare.com</b>.</p></div>';
+}
+
+let MACHINES = [], CURRENT = null;
+let PARTS = [], TASKS = [];
+let DOCS = { model:[], machine:[] };
+let WHO = localStorage.getItem('docs_who') || '';
+let editingPartId = null, editingTaskId = null;
+
+let toastTimer;
+function toast(m,t){ const e=$('toast'); e.textContent=m; e.className='toast show '+(t||''); clearTimeout(toastTimer); toastTimer=setTimeout(()=>e.className='toast '+(t||''),2400); }
+
+// ---- name ----
+function refreshWho(){ $('whoami').textContent = WHO ? (TX('you')+': '+WHO) : TX('setName'); }
+$('lang-btn').onclick = toggleLang;
+applyLang();
+refreshWho();
+$('whoami').onclick = openName;
+function openName(){ $('name-input').value = WHO; $('name-sheet').classList.add('open'); }
+$('name-close').onclick = ()=>$('name-sheet').classList.remove('open');
+$('name-save').onclick = ()=>{ WHO = $('name-input').value.trim(); localStorage.setItem('docs_who',WHO); refreshWho(); $('name-sheet').classList.remove('open'); };
+
+// ---- load machines ----
+whenSupabaseReady(function(){
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  init();
+});
+async function init(){
+  const { data, error } = await sb.from('machines').select('*').order('code');
+  if (error){ $('count').textContent = 'Could not load machines: '+error.message; return; }
+  MACHINES = data||[];
+  renderList();
+  // deep link: ?m=CODE  (QR codes can point here)
+  const m = new URLSearchParams(location.search).get('m');
+  if (m) openMachine(m);
+}
+
+// ---- list ----
+$('search').addEventListener('input', renderList);
+function renderList(){
+  const q = ($('search').value||'').toLowerCase().trim();
+  let items = MACHINES.filter(m => !q || [m.code,m.machine_type,m.brand,m.model,m.serial,m.fixed_asset].some(v=>(v||'').toLowerCase().includes(q)));
+  $('count').textContent = `${items.length} ${items.length===1?TX('machine_word'):TX('machines_word')}`;
+  const out = $('list');
+  if (!items.length){ out.innerHTML='<div class="empty">No machines match.</div>'; return; }
+  const shown = items.slice(0,300);
+  out.innerHTML = shown.map(m=>`
+    <div class="m-row" data-code="${esc(m.code)}">
+      <div class="code">${esc(m.code)}</div>
+      <div class="info"><div class="t">${esc(m.machine_type||'')}${m.brand?' · '+esc(m.brand):''}</div>
+        <div class="m">${esc(m.model||'')}${m.serial?' · '+esc(m.serial):''}</div></div>
+      <span class="chev">›</span>
+    </div>`).join('') + (items.length>300?`<div class="count-line" style="text-align:center">Showing first 300 of ${items.length}. Refine your search.</div>`:'');
+  out.querySelectorAll('.m-row').forEach(el=>el.onclick=()=>openMachine(el.dataset.code));
+}
+
+// ---- machine detail ----
+async function openMachine(code){
+  const m = MACHINES.find(x=>x.code===code);
+  if (!m){ toast('Machine '+code+' not found','err'); return; }
+  CURRENT = m;
+  $('view-list').classList.add('hidden');
+  $('view-detail').classList.remove('hidden');
+  window.scrollTo(0,0);
+  // passport
+  $('passport').innerHTML = `
+    <div style="flex:1;min-width:200px">
+      <div class="pcode">${esc(m.code)}</div>
+      <div class="pmeta">${esc(m.machine_type||'')}${m.brand?' · '+esc(m.brand):''}${m.model?' · '+esc(m.model):''}</div>
+      <div class="pmeta">${m.serial?'Serial '+esc(m.serial):''}${m.fixed_asset?' · FA '+esc(m.fixed_asset):''}</div>
+    </div>
+    <div class="qr-wrap"><div class="qrbox" id="qr"></div><div class="lbl">${esc(m.code)}</div>
+      <button class="btn btn-secondary btn-sm" id="print-qr" style="margin-top:8px">Print QR label</button>
+      <div style="font-size:11px;color:var(--faint);margin-top:4px;max-width:150px">Scan with a phone camera to open this machine</div>
+    </div>`;
+  try{ new QRCode($('qr'), { text: qrLink(m.code), width:110, height:110, correctLevel:QRCode.CorrectLevel.M }); }catch(e){}
+  $('print-qr').onclick = ()=>printQR(m);
+  await loadDocs(code);
+}
+function qrLink(code){ return location.origin + location.pathname + '?m=' + encodeURIComponent(code); }
+function printQR(m){
+  const link = qrLink(m.code);
+  const w = window.open('','_blank');
+  if (!w){ toast('Allow pop-ups to print','err'); return; }
+  w.document.write(`<html><head><title>${esc(m.code)}</title>
+    <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"><\/script>
+    <style>body{font-family:sans-serif;text-align:center;padding:30px;margin:0}
+    #q{display:inline-block;padding:16px;border:2px solid #08385A;border-radius:12px}
+    .c{font-size:30px;font-weight:800;color:#08385A;margin-top:12px}
+    .t{color:#5C6B7A;margin-top:4px;font-size:14px}
+    .h{color:#9AAAB8;margin-top:10px;font-size:11px}</style></head>
+    <body><div id="q"></div>
+    <div class="c">${esc(m.code)}</div>
+    <div class="t">${esc(m.machine_type||'')}${m.brand?' · '+esc(m.brand):''}</div>
+    <div class="h">Scan to open machine documents</div>
+    <script>new QRCode(document.getElementById('q'),{text:${JSON.stringify(link)},width:220,height:220});
+    setTimeout(()=>window.print(),500);<\/script></body></html>`);
+  w.document.close();
+}
+$('back').onclick = ()=>{ $('view-detail').classList.add('hidden'); $('view-list').classList.remove('hidden'); CURRENT=null; };
+
+async function loadDocs(code){
+  $('docs-body').innerHTML = '<div class="empty">Loading…</div>';
+  $('parts-body').innerHTML = '<div class="empty">Loading…</div>';
+  $('maint-body').innerHTML = '<div class="empty">Loading…</div>';
+  const model = CURRENT ? CURRENT.model : null;
+  const [p,t,dModel,dMachine] = await Promise.all([
+    sb.from('spare_parts').select('*').eq('machine_code',code).order('part_name'),
+    sb.from('maintenance_schedule').select('*').eq('machine_code',code).order('next_due',{nullsFirst:false}),
+    model ? sb.from('documents').select('*').eq('scope','model').eq('model',model) : Promise.resolve({data:[]}),
+    sb.from('documents').select('*').eq('scope','machine').eq('machine_code',code),
+  ]);
+  PARTS = (p&&!p.error&&p.data)?p.data:[];
+  TASKS = (t&&!t.error&&t.data)?t.data:[];
+  const modelDocs = (dModel&&!dModel.error&&dModel.data)?dModel.data:[];
+  const machineDocs = (dMachine&&!dMachine.error&&dMachine.data)?dMachine.data:[];
+  DOCS = { model: modelDocs, machine: machineDocs };
+  renderDocs(); renderParts(); renderTasks();
+}
+
+function docPublicUrl(path){
+  // public bucket URL
+  return `${SUPABASE_URL}/storage/v1/object/public/${path}`;
+}
+function fileIcon(mime, name){
+  const n = (name||'').toLowerCase();
+  if ((mime||'').includes('pdf') || n.endsWith('.pdf')) return '📄';
+  if ((mime||'').startsWith('image') || /\.(png|jpe?g|webp|gif)$/.test(n)) return '🖼️';
+  if (/\.(docx?|msword)/.test(n) || (mime||'').includes('word')) return '📝';
+  return '📎';
+}
+function renderDocs(){
+  const b = $('docs-body');
+  const all = [...DOCS.machine, ...DOCS.model];
+  if (!all.length){
+    b.innerHTML = `<div class="empty">No catalog or manual yet.${CURRENT&&CURRENT.model?` <br><span style="font-size:12px">Upload one for model <b>${esc(CURRENT.model)}</b> (shows on all its machines) or just this machine.</span>`:''}</div>`;
+    return;
+  }
+  const rowHtml = (d, isModel) => {
+    const url = docPublicUrl(d.file_path);
+    const scopeTag = isModel
+      ? `<span class="doc-badge" style="background:#E4F1EE;color:var(--ok)">model ${esc(d.model||'')}</span>`
+      : `<span class="doc-badge">this machine</span>`;
+    return `<tr>
+      <td><a href="${esc(url)}" target="_blank" rel="noopener" style="font-weight:600;color:var(--primary);text-decoration:none">${fileIcon(d.mime,d.file_name)} ${esc(d.title)}</a>
+        <div class="upd">${esc(d.doc_type)} · ${esc(d.file_name||'')}${d.uploaded_by?' · by '+esc(d.uploaded_by):''}</div></td>
+      <td>${scopeTag}</td>
+      <td class="row-actions"><button class="icon-btn" data-deldoc="${d.id}" data-path="${esc(d.file_path)}" title="Delete">🗑</button></td>
+    </tr>`;
+  };
+  b.innerHTML = `<table class="doc"><tbody>` +
+    DOCS.machine.map(d=>rowHtml(d,false)).join('') +
+    DOCS.model.map(d=>rowHtml(d,true)).join('') +
+    `</tbody></table>`;
+  b.querySelectorAll('[data-deldoc]').forEach(x=>x.onclick=()=>delDoc(+x.dataset.deldoc, x.dataset.path));
+}
+
+function renderParts(){
+  const b = $('parts-body');
+  if (!PARTS.length){ b.innerHTML=`<div class="empty">${TX('no_parts')}</div>`; return; }
+  b.innerHTML = `<table class="doc"><thead><tr>
+    <th>Part</th><th>Part no.</th><th>Qty</th><th>Replaced</th><th></th></tr></thead><tbody>` +
+    PARTS.map(p=>`<tr>
+      <td><div style="font-weight:600">${esc(p.part_name)}</div>${p.notes?`<div class="upd">${esc(p.notes)}</div>`:''}${p.updated_by?`<div class="upd">updated by ${esc(p.updated_by)}</div>`:''}</td>
+      <td>${esc(p.part_no||'—')}</td>
+      <td>${p.quantity!=null?esc(p.quantity):'—'}${p.unit?' '+esc(p.unit):''}</td>
+      <td>${p.replaced_date?esc(p.replaced_date):'—'}${p.replaced_by?`<div class="upd">by ${esc(p.replaced_by)}</div>`:''}</td>
+      <td class="row-actions">
+        <button class="icon-btn" data-edit="${p.id}" title="Edit">✎</button>
+        <button class="icon-btn" data-del="${p.id}" title="Delete">🗑</button>
+      </td></tr>`).join('') + `</tbody></table>`;
+  b.querySelectorAll('[data-edit]').forEach(x=>x.onclick=()=>openPart(+x.dataset.edit));
+  b.querySelectorAll('[data-del]').forEach(x=>x.onclick=()=>delPart(+x.dataset.del));
+}
+
+// maintenance checklist item definitions (id -> label)
+const CHECK_ITEMS = [
+  ['clean_oil','chk_clean_oil'],
+  ['spare_parts','chk_spare_parts'],
+  ['air_system','chk_air'],
+  ['electrical','chk_electrical'],
+  ['presser_feed','chk_presser'],
+  ['safety_guards','chk_guards'],
+];
+// label resolves through the translation dictionary
+function CHECK_LABEL(id){ const m={clean_oil:'chk_clean_oil',spare_parts:'chk_spare_parts',air_system:'chk_air',electrical:'chk_electrical',presser_feed:'chk_presser',safety_guards:'chk_guards'}; return m[id]?TX(m[id]):id; }
+
+function renderTasks(){
+  const b = $('maint-body');
+  if (!TASKS.length){ b.innerHTML=`<div class="empty">${TX('no_records')}</div>`; return; }
+  const today = new Date(); today.setHours(0,0,0,0);
+  // newest first by date_done (fallback to next_due)
+  const rows = [...TASKS].sort((a,b)=>{
+    const da=a.date_done||a.last_done||'', db=b.date_done||b.last_done||'';
+    return db.localeCompare(da);
+  });
+  b.innerHTML = `<table class="doc"><thead><tr>
+    <th>Date done</th><th>Checks</th><th>Next due</th><th></th></tr></thead><tbody>` +
+    rows.map(t=>{
+      let dueClass='', dueNote='';
+      if (t.next_due){ const d=new Date(t.next_due); const days=Math.round((d-today)/86400000);
+        if (days<0){ dueClass='due-over'; dueNote=' (overdue)'; }
+        else if (days<=7){ dueClass='due-soon'; dueNote=' (soon)'; } }
+      const checks = Array.isArray(t.checks)?t.checks:[];
+      const chips = checks.map(c=>`<span class="check-chip">${esc(CHECK_LABEL(c)||c)}</span>`).join('') || '<span class="upd">—</span>';
+      const typeLabel = t.maint_type==='weekly'?TX('weekly_op'):TX('monthly_mech');
+      const meta = [t.mechanic?(TX('col_by')+' '+esc(t.mechanic)):'', t.line?(TX('line')+' '+esc(t.line)):'', typeLabel].filter(Boolean).join(' · ');
+      return `<tr>
+        <td><div style="font-weight:600">${t.date_done?esc(t.date_done):(t.task?esc(t.task):'—')}</div>${meta?`<div class="upd">${meta}</div>`:''}${t.notes?`<div class="upd">${esc(t.notes)}</div>`:''}</td>
+        <td>${chips}</td>
+        <td class="${dueClass}">${t.next_due?esc(t.next_due)+dueNote:'—'}</td>
+        <td class="row-actions">
+          <button class="icon-btn" data-edit="${t.id}" title="Edit">✎</button>
+          <button class="icon-btn" data-del="${t.id}" title="Delete">🗑</button>
+        </td></tr>`;
+    }).join('') + `</tbody></table>`;
+  b.querySelectorAll('[data-edit]').forEach(x=>x.onclick=()=>openTask(+x.dataset.edit));
+  b.querySelectorAll('[data-del]').forEach(x=>x.onclick=()=>delTask(+x.dataset.del));
+}
+
+// ---- part add/edit ----
+$('add-part').onclick = ()=>openPart(null);
+function openPart(id){
+  editingPartId = id;
+  const p = id ? PARTS.find(x=>x.id===id) : null;
+  $('part-title').textContent = p?'Edit spare part':'Add spare part';
+  $('p-name').value = p?p.part_name:''; $('p-no').value = p?(p.part_no||''):'';
+  $('p-qty').value = p&&p.quantity!=null?p.quantity:''; $('p-unit').value = p?(p.unit||''):'';
+  $('p-repdate').value = p?(p.replaced_date||''):''; $('p-repby').value = p?(p.replaced_by||WHO||''):(WHO||'');
+  $('p-notes').value = p?(p.notes||''):'';
+  $('part-sheet').classList.add('open');
+}
+$('part-close').onclick = ()=>$('part-sheet').classList.remove('open');
+$('p-save').onclick = async ()=>{
+  const name = $('p-name').value.trim();
+  if (!name){ toast(TX('m_part_req'),'err'); return; }
+  const rec = { machine_code:CURRENT.code, part_name:name, part_no:$('p-no').value.trim()||null,
+    quantity: $('p-qty').value!==''?parseInt($('p-qty').value,10):null, unit:$('p-unit').value.trim()||null,
+    replaced_date:$('p-repdate').value||null, replaced_by:$('p-repby').value.trim()||null,
+    notes:$('p-notes').value.trim()||null, updated_at:new Date().toISOString(), updated_by:WHO||null };
+  const btn=$('p-save'); btn.disabled=true; btn.textContent='Saving…';
+  let res;
+  if (editingPartId) res = await sb.from('spare_parts').update(rec).eq('id',editingPartId);
+  else res = await sb.from('spare_parts').insert(rec);
+  btn.disabled=false; btn.textContent='Save';
+  if (res.error){ toast('Save failed: '+res.error.message,'err'); return; }
+  $('part-sheet').classList.remove('open');
+  await loadDocs(CURRENT.code); toast(TX('m_saved'),'ok');
+};
+async function delPart(id){
+  const p = PARTS.find(x=>x.id===id); if(!p) return;
+  if (!confirm(`Delete spare part “${p.part_name}”?`)) return;
+  const { error } = await sb.from('spare_parts').delete().eq('id',id);
+  if (error){ toast('Delete failed: '+error.message,'err'); return; }
+  await loadDocs(CURRENT.code); toast(TX('m_deleted'),'ok');
+}
+
+// ---- maintenance record add/edit ----
+let taskChecks = new Set();
+function buildCheckGrid(){
+  const g = $('t-checks');
+  g.innerHTML = CHECK_ITEMS.map(([id,label])=>
+    `<div class="check-item${taskChecks.has(id)?' on':''}" data-check="${id}"><span class="box">${taskChecks.has(id)?'✓':''}</span>${esc(TX(label))}</div>`
+  ).join('');
+  g.querySelectorAll('[data-check]').forEach(el=>el.onclick=()=>{
+    const id=el.dataset.check;
+    if (taskChecks.has(id)) taskChecks.delete(id); else taskChecks.add(id);
+    buildCheckGrid();
+  });
+}
+$('add-task').onclick = ()=>openTask(null);
+function openTask(id){
+  editingTaskId = id;
+  const t = id ? TASKS.find(x=>x.id===id) : null;
+  $('task-title').textContent = t?'Edit maintenance record':'Add maintenance record';
+  $('t-date').value = t?(t.date_done||''):'';
+  $('t-type').value = t?(t.maint_type||'monthly'):'monthly';
+  $('t-line').value = t?(t.line||''):'';
+  $('t-mech').value = t?(t.mechanic||WHO||''):(WHO||'');
+  $('t-notes').value = t?(t.notes||''):'';
+  $('t-next').value = t?(t.next_due||''):'';
+  taskChecks = new Set(t && Array.isArray(t.checks) ? t.checks : []);
+  buildCheckGrid();
+  $('task-sheet').classList.add('open');
+}
+$('task-close').onclick = ()=>$('task-sheet').classList.remove('open');
+$('t-save').onclick = async ()=>{
+  const date_done = $('t-date').value||null;
+  if (!date_done){ toast(TX('m_task_req'),'err'); return; }
+  const rec = { machine_code:CURRENT.code,
+    date_done, maint_type:$('t-type').value, line:$('t-line').value.trim()||null,
+    mechanic:$('t-mech').value.trim()||null, checks:[...taskChecks],
+    next_due:$('t-next').value||null, notes:$('t-notes').value.trim()||null,
+    task:'Maintenance', updated_at:new Date().toISOString(), updated_by:WHO||null };
+  const btn=$('t-save'); btn.disabled=true; btn.textContent='Saving…';
+  let res;
+  if (editingTaskId) res = await sb.from('maintenance_schedule').update(rec).eq('id',editingTaskId);
+  else res = await sb.from('maintenance_schedule').insert(rec);
+  btn.disabled=false; btn.textContent='Save record';
+  if (res.error){ toast('Save failed: '+res.error.message,'err'); return; }
+  $('task-sheet').classList.remove('open');
+  await loadDocs(CURRENT.code); toast(TX('m_saved'),'ok');
+};
+async function delTask(id){
+  const t = TASKS.find(x=>x.id===id); if(!t) return;
+  if (!confirm('Delete this maintenance record?')) return;
+  const { error } = await sb.from('maintenance_schedule').delete().eq('id',id);
+  if (error){ toast('Delete failed: '+error.message,'err'); return; }
+  await loadDocs(CURRENT.code); toast(TX('m_deleted'),'ok');
+}
+
+// ---- catalog / manual upload ----
+$('add-doc').onclick = ()=>{
+  if (!CURRENT) return;
+  $('d-title').value=''; $('d-type').value='catalog'; $('d-file').value=''; $('d-progress').textContent='';
+  // default scope: model if the machine has a model, else machine
+  $('d-scope').value = CURRENT.model ? 'model' : 'machine';
+  updateScopeHint();
+  $('d-scope').onchange = updateScopeHint;
+  $('doc-sheet').classList.add('open');
+};
+function updateScopeHint(){
+  const s = $('d-scope').value;
+  $('d-scope-hint').textContent = s==='model'
+    ? (CURRENT.model ? `Will show on every machine with model “${CURRENT.model}”.` : 'This machine has no model set — choose “Only this machine”.')
+    : `Will show only on machine ${CURRENT.code}.`;
+}
+$('doc-close').onclick = ()=>$('doc-sheet').classList.remove('open');
+
+$('d-save').onclick = async ()=>{
+  const title = $('d-title').value.trim();
+  const type = $('d-type').value;
+  const scope = $('d-scope').value;
+  const file = $('d-file').files[0];
+  if (!title){ toast(TX('m_title_req'),'err'); return; }
+  if (!file){ toast(TX('m_file_req'),'err'); return; }
+  if (scope==='model' && !CURRENT.model){ toast('This machine has no model — use “Only this machine”.','err'); return; }
+  if (file.size > 25*1024*1024){ toast('File too large (max 25 MB)','err'); return; }
+
+  const btn=$('d-save'); btn.disabled=true; btn.textContent='Uploading…';
+  $('d-progress').textContent='Uploading '+file.name+'…';
+  // build a safe storage path
+  const safe = file.name.replace(/[^\w.\-]+/g,'_');
+  const keyBase = scope==='model' ? ('model/'+(CURRENT.model||'unknown')) : ('machine/'+CURRENT.code);
+  const path = `catalogs/${keyBase}/${Date.now()}_${safe}`.replace(/\s+/g,'_');
+
+  // upload to storage
+  const up = await sb.storage.from('catalogs').upload(path.replace(/^catalogs\//,''), file, { upsert:false, contentType:file.type||undefined });
+  if (up.error){ btn.disabled=false; btn.textContent='Upload'; $('d-progress').textContent=''; toast('Upload failed: '+up.error.message,'err'); return; }
+  const storedPath = 'catalogs/' + up.data.path; // full path incl bucket
+
+  // record in documents table
+  const rec = {
+    scope, doc_type:type, title,
+    model: scope==='model' ? CURRENT.model : null,
+    machine_code: scope==='machine' ? CURRENT.code : null,
+    file_path: storedPath, file_name:file.name, mime:file.type||null, size_bytes:file.size,
+    uploaded_at:new Date().toISOString(), uploaded_by: WHO||null
+  };
+  const ins = await sb.from('documents').insert(rec);
+  btn.disabled=false; btn.textContent='Upload'; $('d-progress').textContent='';
+  if (ins.error){ toast('Saved file but record failed: '+ins.error.message,'err'); return; }
+  $('doc-sheet').classList.remove('open');
+  await loadDocs(CURRENT.code); toast(TX('m_uploaded'),'ok');
+};
+
+async function delDoc(id, path){
+  if (!confirm('Delete this file?')) return;
+  // remove storage object (best-effort), then the record
+  if (path){ const rel = path.replace(/^catalogs\//,''); await sb.storage.from('catalogs').remove([rel]); }
+  const { error } = await sb.from('documents').delete().eq('id',id);
+  if (error){ toast('Delete failed: '+error.message,'err'); return; }
+  await loadDocs(CURRENT.code); toast(TX('m_deleted'),'ok');
+}
+
+// ================= NAV =================
+document.getElementById('topnav').addEventListener('click', e=>{
+  const btn=e.target.closest('button[data-nav]'); if(!btn) return;
+  document.querySelectorAll('#topnav button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const nav=btn.dataset.nav;
+  $('view-detail').classList.add('hidden');
+  $('view-list').classList.add('hidden');
+  $('view-dashboard').classList.add('hidden');
+  $('view-qrprint').classList.add('hidden');
+  if (nav==='machines'){ $('view-list').classList.remove('hidden'); }
+  else if (nav==='dashboard'){ $('view-dashboard').classList.remove('hidden'); loadDashboard(); }
+  else if (nav==='qrprint'){ $('view-qrprint').classList.remove('hidden'); initQrPrint(); }
+  window.scrollTo(0,0);
+});
+
+// ================= ADD MACHINE =================
+$('add-machine').onclick = ()=>{
+  ['nm-code','nm-type','nm-brand','nm-model','nm-serial','nm-fa'].forEach(id=>$(id).value='');
+  $('nm-source').value='stock';
+  $('machine-sheet').classList.add('open');
+};
+$('machine-close').onclick = ()=>$('machine-sheet').classList.remove('open');
+$('nm-save').onclick = async ()=>{
+  const code=$('nm-code').value.trim();
+  if (!code){ toast(TX('m_code_req'),'err'); return; }
+  if (MACHINES.some(m=>m.code.toLowerCase()===code.toLowerCase())){ toast(TX('m_code_exists'),'err'); return; }
+  const rec={ code, machine_type:$('nm-type').value.trim()||null, brand:$('nm-brand').value.trim()||null,
+    model:$('nm-model').value.trim()||null, serial:$('nm-serial').value.trim()||null,
+    fixed_asset:$('nm-fa').value.trim()||null, source:$('nm-source').value };
+  const btn=$('nm-save'); btn.disabled=true; btn.textContent='Adding…';
+  const { error } = await sb.from('machines').insert(rec);
+  btn.disabled=false; btn.textContent='Add machine';
+  if (error){ toast('Add failed: '+error.message,'err'); return; }
+  MACHINES.push(rec); MACHINES.sort((a,b)=>a.code.localeCompare(b.code));
+  $('machine-sheet').classList.remove('open');
+  renderList(); toast(`${code} ${TX('m_added')}`,'ok');
+};
+
+// ================= DASHBOARD =================
+let DASH = { parts:[], maint:[] };
+async function loadDashboard(){
+  $('dash-stats').innerHTML='<div class="mini">Loading…</div>';
+  const [p,m] = await Promise.all([
+    sb.from('spare_parts').select('*'),
+    sb.from('maintenance_schedule').select('*'),
+  ]);
+  DASH.parts = (p&&!p.error&&p.data)?p.data:[];
+  DASH.maint = (m&&!m.error&&m.data)?m.data:[];
+  renderDashboard();
+}
+function machineName(code){ const m=MACHINES.find(x=>x.code===code); return m?`${m.machine_type||''}${m.brand?' · '+m.brand:''}`:''; }
+function ym(d){ return d? String(d).slice(0,7):''; }
+function renderDashboard(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const thisMonth = new Date().toISOString().slice(0,7);
+  // maintenance due
+  const withDue = DASH.maint.filter(t=>t.next_due);
+  const overdue = withDue.filter(t=>new Date(t.next_due) < today);
+  const soon = withDue.filter(t=>{ const dv=new Date(t.next_due); const days=Math.round((dv-today)/86400000); return days>=0 && days<=7; });
+  const maintThisMonth = DASH.maint.filter(t=>ym(t.date_done)===thisMonth).length;
+  const partsThisMonth = DASH.parts.filter(p=>ym(p.replaced_date)===thisMonth).length;
+  // stats
+  $('dash-stats').innerHTML = `
+    <div class="stat"><div class="n err">${overdue.length}</div><div class="l">${TX('st_overdue')}</div></div>
+    <div class="stat"><div class="n warn">${soon.length}</div><div class="l">${TX('st_due7')}</div></div>
+    <div class="stat"><div class="n">${maintThisMonth}</div><div class="l">${TX('st_this_month')}</div></div>
+    <div class="stat"><div class="n">${DASH.maint.length}</div><div class="l">${TX('st_total_records')}</div></div>
+    <div class="stat"><div class="n">${partsThisMonth}</div><div class="l">${TX('st_parts_month')}</div></div>
+    <div class="stat"><div class="n">${DASH.parts.length}</div><div class="l">${TX('st_parts_total')}</div></div>`;
+
+  // due table (overdue first, then soon)
+  const dueList=[...overdue.map(t=>({...t,_st:'overdue'})), ...soon.map(t=>({...t,_st:'soon'}))]
+    .sort((a,b)=>String(a.next_due).localeCompare(String(b.next_due)));
+  const dueBox=$('dash-due');
+  if (!dueList.length){ dueBox.innerHTML=`<div class="empty">${TX('nothing_due')}</div>`; }
+  else {
+    dueBox.innerHTML=`<table class="doc"><thead><tr><th>${TX('col_machine')}</th><th>${TX('col_type')}</th><th>${TX('col_mechanic')}</th><th>${TX('col_nextdue')}</th></tr></thead><tbody>`+
+      dueList.map(t=>`<tr>
+        <td><a href="#" data-open="${esc(t.machine_code)}" style="font-weight:600;color:var(--primary);text-decoration:none">${esc(t.machine_code)}</a><div class="upd">${esc(machineName(t.machine_code))}</div></td>
+        <td>${t.maint_type==='weekly'?TX('weekly_op'):TX('monthly_mech')}</td>
+        <td>${esc(t.mechanic||'—')}</td>
+        <td class="${t._st==='overdue'?'due-over':'due-soon'}">${esc(t.next_due)} ${t._st==='overdue'?('('+TX('st_overdue').toLowerCase()+')'):''}</td>
+      </tr>`).join('')+`</tbody></table>`;
+    dueBox.querySelectorAll('[data-open]').forEach(a=>a.onclick=(e)=>{e.preventDefault(); gotoMachine(a.dataset.open);});
+  }
+
+  // by line & mechanic
+  const byLine={}, byMech={};
+  DASH.maint.forEach(t=>{ if(t.line){byLine[t.line]=(byLine[t.line]||0)+1;} if(t.mechanic){byMech[t.mechanic]=(byMech[t.mechanic]||0)+1;} });
+  const bd=$('dash-breakdown');
+  const lineRows=Object.entries(byLine).sort((a,b)=>b[1]-a[1]);
+  const mechRows=Object.entries(byMech).sort((a,b)=>b[1]-a[1]);
+  if(!lineRows.length && !mechRows.length){ bd.innerHTML=`<div class="empty">${TX('no_maint')}</div>`; }
+  else {
+    bd.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div><div class="mini" style="margin-bottom:6px;font-weight:700">${TX('by_line')}</div>${
+        lineRows.length?lineRows.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #EEF2F6"><span>Line ${esc(k)}</span><span style="font-weight:700">${v}</span></div>`).join(''):'<div class="mini">—</div>'}</div>
+      <div><div class="mini" style="margin-bottom:6px;font-weight:700">${TX('by_mechanic')}</div>${
+        mechRows.length?mechRows.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #EEF2F6"><span>${esc(k)}</span><span style="font-weight:700">${v}</span></div>`).join(''):'<div class="mini">—</div>'}</div>
+    </div>`;
+  }
+
+  // recent part replacements
+  const recentParts=[...DASH.parts].filter(p=>p.replaced_date).sort((a,b)=>String(b.replaced_date).localeCompare(String(a.replaced_date))).slice(0,15);
+  const pb=$('dash-parts');
+  if(!recentParts.length){ pb.innerHTML=`<div class="empty">${TX('no_parts_rep')}</div>`; }
+  else {
+    pb.innerHTML=`<table class="doc"><thead><tr><th>${TX('col_machine')}</th><th>${TX('col_part')}</th><th>${TX('col_replaced')}</th><th>${TX('col_by')}</th></tr></thead><tbody>`+
+      recentParts.map(p=>`<tr>
+        <td><a href="#" data-open="${esc(p.machine_code)}" style="font-weight:600;color:var(--primary);text-decoration:none">${esc(p.machine_code)}</a></td>
+        <td>${esc(p.part_name)}${p.part_no?`<div class="upd">${esc(p.part_no)}</div>`:''}</td>
+        <td>${esc(p.replaced_date)}</td><td>${esc(p.replaced_by||'—')}</td>
+      </tr>`).join('')+`</tbody></table>`;
+    pb.querySelectorAll('[data-open]').forEach(a=>a.onclick=(e)=>{e.preventDefault(); gotoMachine(a.dataset.open);});
+  }
+
+  // recent activity (both, by updated/date)
+  const acts=[
+    ...DASH.maint.map(t=>({when:t.date_done||(t.updated_at||'').slice(0,10), what:`Maintenance on ${t.machine_code}`, who:t.mechanic||t.updated_by||''})),
+    ...DASH.parts.map(p=>({when:p.replaced_date||(p.updated_at||'').slice(0,10), what:`Part “${p.part_name}” on ${p.machine_code}`, who:p.replaced_by||p.updated_by||''})),
+  ].filter(a=>a.when).sort((a,b)=>String(b.when).localeCompare(String(a.when))).slice(0,15);
+  const ab=$('dash-activity');
+  ab.innerHTML = acts.length? `<table class="doc"><tbody>`+acts.map(a=>`<tr>
+      <td style="white-space:nowrap">${esc(a.when)}</td><td>${esc(a.what)}</td><td class="upd">${esc(a.who)}</td></tr>`).join('')+`</tbody></table>`
+    : `<div class="empty">${TX('no_activity')}</div>`;
+}
+function gotoMachine(code){
+  // switch to machines tab and open the machine
+  document.querySelectorAll('#topnav button').forEach(b=>b.classList.remove('active'));
+  document.querySelector('#topnav button[data-nav="machines"]').classList.add('active');
+  $('view-dashboard').classList.add('hidden'); $('view-list').classList.remove('hidden');
+  openMachine(code);
+}
+
+// ================= EXPORT =================
+function partsRows(){
+  return DASH.parts.map(p=>({
+    Machine:p.machine_code, Type:machineName(p.machine_code),
+    Part:p.part_name, 'Part no':p.part_no||'', Qty:p.quantity==null?'':p.quantity, Unit:p.unit||'',
+    'Replacement date':p.replaced_date||'', 'Replaced by':p.replaced_by||'', Notes:p.notes||''
+  }));
+}
+function maintRows(){
+  return DASH.maint.map(t=>({
+    Machine:t.machine_code, Type:machineName(t.machine_code),
+    'Date done':t.date_done||'', Kind:t.maint_type||'', Line:t.line||'', Mechanic:t.mechanic||'',
+    Checks:(Array.isArray(t.checks)?t.checks.map(c=>CHECK_LABEL(c)||c).join('; '):''),
+    'Next due':t.next_due||'', Remarks:t.notes||''
+  }));
+}
+function toCSV(rows){
+  if(!rows.length) return '';
+  const cols=Object.keys(rows[0]);
+  const esc2=v=>{ v=(v==null?'':String(v)); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  return cols.join(',')+'\n'+rows.map(r=>cols.map(c=>esc2(r[c])).join(',')).join('\n');
+}
+function download(name, content, mime){
+  const blob=new Blob([content],{type:mime}); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },100);
+}
+function stamp(){ return new Date().toISOString().slice(0,10); }
+document.getElementById('view-dashboard').addEventListener('click', e=>{
+  const btn=e.target.closest('[data-exp]'); if(!btn) return;
+  const kind=btn.dataset.exp;
+  const rows = kind.startsWith('parts')?partsRows():maintRows();
+  if(!rows.length){ toast('Nothing to export yet','err'); return; }
+  const label = kind.startsWith('parts')?'spare_parts':'maintenance';
+  if (kind.endsWith('csv')){ download(`pactics_${label}_${stamp()}.csv`, toCSV(rows), 'text/csv'); toast('CSV downloaded','ok'); }
+  else {
+    if (typeof XLSX === 'undefined' || window.__xlsxFailed){
+      download(`pactics_${label}_${stamp()}.csv`, toCSV(rows), 'text/csv');
+      toast('Excel unavailable — downloaded CSV instead','ok'); return;
+    }
+    try{
+      const ws=XLSX.utils.json_to_sheet(rows); const wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, label);
+      XLSX.writeFile(wb, `pactics_${label}_${stamp()}.xlsx`); toast('Excel downloaded','ok');
+    }catch(err){
+      download(`pactics_${label}_${stamp()}.csv`, toCSV(rows), 'text/csv');
+      toast('Excel failed — downloaded CSV instead','ok');
+    }
+  }
+});
+
+// ================= QR PRINT =================
+let qrSelected = new Set();
+let qrInited = false;
+function initQrPrint(){
+  // build group dropdown once
+  const sel = $('qr-group');
+  if (!qrInited){
+    const types = [...new Set(MACHINES.map(m=>m.machine_type).filter(Boolean))].sort();
+    const brands = [...new Set(MACHINES.map(m=>m.brand).filter(Boolean))].sort();
+    let opts = '<option value="" data-i18n="quick_group">Quick select group…</option>';
+    opts += '<optgroup label="By type">' + types.map(t=>`<option value="type:${esc(t)}">All ${esc(t)}</option>`).join('') + '</optgroup>';
+    opts += '<optgroup label="By brand">' + brands.map(bd=>`<option value="brand:${esc(bd)}">All ${esc(bd)}</option>`).join('') + '</optgroup>';
+    opts += '<optgroup label="By source"><option value="source:stock">All stock</option><option value="source:rental">All rental</option></optgroup>';
+    sel.innerHTML = opts;
+    qrInited = true;
+  }
+  renderQrPicklist();
+  renderQrLabels();
+}
+function qrFiltered(){
+  const q=($('qr-search').value||'').toLowerCase().trim();
+  return MACHINES.filter(m=>!q || [m.code,m.machine_type,m.brand,m.model,m.serial].some(v=>(v||'').toLowerCase().includes(q)));
+}
+function renderQrPicklist(){
+  const box=$('qr-picklist');
+  const items=qrFiltered().slice(0,400);
+  if(!items.length){ box.innerHTML='<div class="empty">No machines match.</div>'; return; }
+  box.innerHTML = items.map(m=>`
+    <label class="qr-pick">
+      <input type="checkbox" data-code="${esc(m.code)}" ${qrSelected.has(m.code)?'checked':''}>
+      <span class="c">${esc(m.code)}</span>
+      <span class="m">${esc(m.machine_type||'')}${m.brand?' · '+esc(m.brand):''}</span>
+    </label>`).join('');
+  box.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{
+    if(cb.checked) qrSelected.add(cb.dataset.code); else qrSelected.delete(cb.dataset.code);
+    updateQrCount(); renderQrLabels();
+  });
+  updateQrCount();
+}
+function updateQrCount(){ $('qr-count').textContent = `${qrSelected.size} ${TX('selected')}`; }
+$('qr-search').addEventListener('input', renderQrPicklist);
+$('qr-group').addEventListener('change', ()=>{
+  const v=$('qr-group').value; if(!v) return;
+  const [kind,val]=v.split(':');
+  MACHINES.forEach(m=>{
+    let hit=false;
+    if(kind==='type') hit=(m.machine_type===val);
+    else if(kind==='brand') hit=(m.brand===val);
+    else if(kind==='source') hit=(m.source===val);
+    if(hit) qrSelected.add(m.code);
+  });
+  $('qr-group').value='';
+  renderQrPicklist(); renderQrLabels();
+});
+$('qr-selall').onclick = ()=>{ qrFiltered().forEach(m=>qrSelected.add(m.code)); renderQrPicklist(); renderQrLabels(); };
+$('qr-clear').onclick = ()=>{ qrSelected.clear(); renderQrPicklist(); renderQrLabels(); };
+
+function renderQrLabels(){
+  const area=$('qr-labels'); const empty=$('qr-empty');
+  const codes=[...qrSelected];
+  if(!codes.length){ empty.textContent=TX('qr_empty'); empty.style.display=''; area.innerHTML=''; return; }
+  empty.style.display='none';
+  // order by machine code
+  codes.sort((a,b)=>a.localeCompare(b));
+  area.innerHTML = codes.map(c=>`<div class="qr-label"><div class="qim" data-qr="${esc(c)}"></div><div class="qc">${esc(c)}</div></div>`).join('');
+  // render QR into each
+  area.querySelectorAll('[data-qr]').forEach(el=>{
+    el.innerHTML='';
+    try{ new QRCode(el, { text: qrLink(el.dataset.qr), width:96, height:96, correctLevel:QRCode.CorrectLevel.M }); }catch(e){}
+  });
+}
+$('qr-print').onclick = ()=>{
+  if(!qrSelected.size){ toast(TX('m_select_machine'),'err'); return; }
+  window.print();
+};
+$('qr-pdf').onclick = ()=>{
+  if(!qrSelected.size){ toast(TX('m_select_machine'),'err'); return; }
+  toast('In the print dialog, choose “Save as PDF”','ok');
+  setTimeout(()=>window.print(), 400);
+};
+
+// close sheets on backdrop tap
+document.querySelectorAll('.backdrop').forEach(bd=>bd.onclick=e=>{ if(e.target===bd) bd.classList.remove('open'); });
+</script>
+
+
+</body></html>
