@@ -197,6 +197,20 @@
   .due-count{font-size:12.5px;color:var(--grey);font-variant-numeric:tabular-nums}
   .due-pager{display:flex;align-items:center;gap:8px}
   .due-pg{font-size:13px;font-weight:700;color:var(--dark);font-variant-numeric:tabular-nums;min-width:44px;text-align:center}
+
+  /* clickable KPI filter cards */
+  .stat.clickable{cursor:pointer}
+  .stat.clickable:hover{border-color:var(--primary)}
+  .stat.clickable:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+  .stat.active{box-shadow:0 0 0 2px var(--primary),0 6px 16px rgba(8,56,90,.12)}
+  .stat.active.tone-err{box-shadow:0 0 0 2px var(--err),0 6px 16px rgba(192,57,43,.16);background:#FDECEA;border-color:#F0C7C0}
+  .stat.active.tone-warn{box-shadow:0 0 0 2px var(--amber),0 6px 16px rgba(196,106,27,.16);background:#FDF4E7;border-color:#EAD8BB}
+
+  /* fixed-height internal-scroll container for the due table */
+  .due-scroll{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
+  .due-scroll table.doc.dense{margin:0;width:100%;border-collapse:separate;border-spacing:0}
+  #view-dashboard .due-scroll table.doc thead th{top:0;z-index:6;box-shadow:inset 0 -1px 0 var(--line)}
+  .due-scrollcount{font-size:12.5px;color:var(--grey);margin-top:10px;font-variant-numeric:tabular-nums}
   .exp-btns{display:flex;gap:6px}
   .mini{font-size:12px;color:var(--grey)}
   .qr-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
@@ -3262,14 +3276,15 @@ async function loadDashboard(){
 }
 function machineName(code){ const m=MACHINES.find(x=>x.code===code); return m?`${m.machine_type||''}${m.brand?' · '+m.brand:''}`:''; }
 function ym(d){ return d? String(d).slice(0,7):''; }
-let DUE = { rows:[], q:'', mech:'', type:'', tier:'', sortKey:'daysLate', sortDir:'desc', page:1, per:25 };
+let DUE = { rows:[], q:'', mech:'', type:'', state:'all', sortKey:'daysLate', sortDir:'desc' };
 function dueFiltered(){
   let r = DUE.rows.slice();
+  if(DUE.state==='overdue') r = r.filter(x=>x.daysLate>0);
+  else if(DUE.state==='soon') r = r.filter(x=>x.daysLate<=0);
   const q = DUE.q.trim().toLowerCase();
   if(q) r = r.filter(x=>(x.code+' '+x.type+' '+x.brand+' '+x.mechanic).toLowerCase().includes(q));
   if(DUE.mech) r = r.filter(x=>x.mechanic===DUE.mech);
   if(DUE.type) r = r.filter(x=>x.type===DUE.type);
-  if(DUE.tier) r = r.filter(x=>x.tier===DUE.tier);
   const k=DUE.sortKey, dir=DUE.sortDir==='asc'?1:-1;
   r.sort((a,b)=>{
     if(k==='daysLate') return (a.daysLate-b.daysLate)*dir;
@@ -3290,11 +3305,6 @@ function renderDueTable(){
   const types=[...new Set(DUE.rows.map(r=>r.type).filter(Boolean))].sort();
   const opt=(v,label,sel)=>`<option value="${esc(v)}"${sel===v?' selected':''}>${esc(label)}</option>`;
   const rows=dueFiltered();
-  const total=rows.length;
-  const pages=Math.max(1,Math.ceil(total/DUE.per));
-  if(DUE.page>pages) DUE.page=pages;
-  const start=(DUE.page-1)*DUE.per;
-  const pageRows=rows.slice(start,start+DUE.per);
   const caret=k=>DUE.sortKey===k?(DUE.sortDir==='asc'?' ▲':' ▼'):'';
   const th=(k,label)=>`<th class="sortable${DUE.sortKey===k?' sorted':''}" data-sort="${k}">${label}${caret(k)}</th>`;
   box.innerHTML=`
@@ -3302,14 +3312,11 @@ function renderDueTable(){
     <div class="due-search"><input id="due-q" placeholder="${TX('search_due_ph')}" value="${esc(DUE.q)}"></div>
     <select id="due-mech" class="due-sel"><option value="">${TX('f_all_mech')}</option>${mechs.map(m=>opt(m,m,DUE.mech)).join('')}</select>
     <select id="due-type" class="due-sel"><option value="">${TX('f_all_type')}</option>${types.map(t=>opt(t,t,DUE.type)).join('')}</select>
-    <select id="due-tier" class="due-sel"><option value="">${TX('f_all_tier')}</option>${opt('critical',TX('tier_critical'),DUE.tier)}${opt('late',TX('tier_late'),DUE.tier)}${opt('soon',TX('tier_soon'),DUE.tier)}</select>
-    <div class="due-spacer"></div>
-    <select id="due-per" class="due-sel">${[25,50,100].map(n=>`<option value="${n}"${DUE.per==n?' selected':''}>${n}</option>`).join('')}</select>
   </div>
-  <div class="due-tablewrap"><table class="doc dense"><thead><tr>
+  <div class="due-scroll"><table class="doc dense"><thead><tr>
     ${th('code',TX('col_machine'))}${th('type',TX('col_type'))}${th('mechanic',TX('col_mechanic'))}${th('next_due',TX('col_nextdue'))}${th('daysLate',TX('col_days_late'))}<th class="act-h">${TX('col_actions')}</th>
   </tr></thead><tbody>${
-    pageRows.map(x=>`<tr>
+    rows.length? rows.map(x=>`<tr>
       <td><a href="#" data-open="${esc(x.code)}" class="mlink">${esc(x.code)}</a></td>
       <td>${esc(x.type||'—')}${x.brand?`<div class="upd">${esc(x.brand)}</div>`:''}</td>
       <td>${esc(x.mechanic||'—')}</td>
@@ -3319,24 +3326,13 @@ function renderDueTable(){
         <button class="ibtn ibtn-ok" data-done="${x.id}" title="${TX('act_done')}" aria-label="${TX('act_done')}">✓</button>
         <button class="ibtn" data-go="${esc(x.code)}" title="${TX('act_open')}" aria-label="${TX('act_open')}">↗</button>
       </td>
-    </tr>`).join('')
+    </tr>`).join('') : `<tr><td colspan="6" class="empty">${TX('nothing_due')}</td></tr>`
   }</tbody></table></div>
-  <div class="due-foot">
-    <span class="due-count">${TX('showing')} ${total?start+1:0}–${Math.min(start+DUE.per,total)} ${TX('showing_of')} ${total}</span>
-    <div class="due-pager">
-      <button class="ibtn" id="due-prev" ${DUE.page<=1?'disabled':''}>‹</button>
-      <span class="due-pg">${DUE.page}/${pages}</span>
-      <button class="ibtn" id="due-next" ${DUE.page>=pages?'disabled':''}>›</button>
-    </div>
-  </div>`;
+  <div class="due-scrollcount">${TX('showing')} ${rows.length} ${TX('showing_of')} ${DUE.rows.length}</div>`;
   const q=$('due-q');
-  if(q) q.oninput=()=>{ const pos=q.selectionStart; DUE.q=q.value; DUE.page=1; renderDueTable(); const n=$('due-q'); if(n){ n.focus(); try{n.setSelectionRange(pos,pos);}catch(e){} } };
-  $('due-mech').onchange=e=>{ DUE.mech=e.target.value; DUE.page=1; renderDueTable(); };
-  $('due-type').onchange=e=>{ DUE.type=e.target.value; DUE.page=1; renderDueTable(); };
-  $('due-tier').onchange=e=>{ DUE.tier=e.target.value; DUE.page=1; renderDueTable(); };
-  $('due-per').onchange=e=>{ DUE.per=+e.target.value; DUE.page=1; renderDueTable(); };
-  const pv=$('due-prev'); if(pv) pv.onclick=()=>{ if(DUE.page>1){DUE.page--; renderDueTable();} };
-  const nx=$('due-next'); if(nx) nx.onclick=()=>{ if(DUE.page<pages){DUE.page++; renderDueTable();} };
+  if(q) q.oninput=()=>{ const pos=q.selectionStart; DUE.q=q.value; renderDueTable(); const n=$('due-q'); if(n){ n.focus(); try{n.setSelectionRange(pos,pos);}catch(e){} } };
+  $('due-mech').onchange=e=>{ DUE.mech=e.target.value; renderDueTable(); };
+  $('due-type').onchange=e=>{ DUE.type=e.target.value; renderDueTable(); };
   box.querySelectorAll('th.sortable').forEach(h=>h.onclick=()=>{ const k=h.dataset.sort; if(DUE.sortKey===k){DUE.sortDir=DUE.sortDir==='asc'?'desc':'asc';} else {DUE.sortKey=k; DUE.sortDir=(k==='daysLate')?'desc':'asc';} renderDueTable(); });
   box.querySelectorAll('[data-open],[data-go]').forEach(a=>a.onclick=e=>{ e.preventDefault(); gotoMachine(a.dataset.open||a.dataset.go); });
   box.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>markDone(+b.dataset.done));
@@ -3370,16 +3366,26 @@ function renderDashboard(){
     partsM:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2 2.6-2.6Z"/></svg>',
     partsT:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>'
   };
-  const statCard=(val,label,tone,icon,alert)=>`<div class="stat tone-${tone}${alert&&val>0?' alert':''}">
-    <div class="stat-top"><div class="n">${val}</div><div class="ic">${icon}</div></div>
-    <div class="l">${label}</div></div>`;
+  const statCard=(val,label,tone,icon,alert,state)=>{
+    const cl=['stat','tone-'+tone];
+    if(alert&&val>0) cl.push('alert');
+    if(state){ cl.push('clickable'); if(DUE.state===state) cl.push('active'); }
+    return `<div class="${cl.join(' ')}"${state?` data-state="${state}" role="button" tabindex="0"`:''}>
+      <div class="stat-top"><div class="n">${val}</div><div class="ic">${icon}</div></div>
+      <div class="l">${label}</div></div>`;
+  };
   $('dash-stats').innerHTML =
-    statCard(overdue.length, TX('st_overdue'), 'err', ICON.overdue, true) +
-    statCard(soon.length, TX('st_due7'), 'warn', ICON.soon, true) +
+    statCard(overdue.length, TX('st_overdue'), 'err', ICON.overdue, true, 'overdue') +
+    statCard(soon.length, TX('st_due7'), 'warn', ICON.soon, true, 'soon') +
     statCard(maintThisMonth, TX('st_this_month'), 'ok', ICON.month, false) +
     statCard(DASH.maint.length, TX('st_total_records'), 'info', ICON.records, false) +
     statCard(partsThisMonth, TX('st_parts_month'), 'ok', ICON.partsM, false) +
     statCard(DASH.parts.length, TX('st_parts_total'), 'info', ICON.partsT, false);
+  $('dash-stats').querySelectorAll('.stat.clickable').forEach(c=>{
+    const flip=()=>{ const s=c.dataset.state; DUE.state=(DUE.state===s)?'all':s; renderDashboard(); };
+    c.onclick=flip;
+    c.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); flip(); } };
+  });
 
   // header health chip + date
   const dh=$('dash-health');
