@@ -6,3 +6,47 @@
     --line:#E2EAF1; --grey:#5C6B7A; --faint:#9AAAB8; --card:#fff; --bg:#F4F7FA;
     --radius:12px; --shadow:0 1px 3px rgba(8,56,90,.08),0 1px 2px rgba(8,56,90,.04);
   }
+
+
+/* ================= DARK MODE ================= */
+  /* Toggled by adding .dark to <html>. Overrides tokens, then repoints the
+     surfaces that hard-code light colors. --dark becomes light TEXT here;
+     the header background is pinned separately so it stays navy. */
+  .dark{
+    --primary:#4C9FE0; --dark:#E8EEF5; --ok:#3BA491; --amber:#D98A3C; --err:#E0655A;
+    --line:#2B3947; --grey:#A6B4C2; --faint:#7A8A9C; --card:#18232F; --bg:#0E1621;
+    --shadow:0 1px 3px rgba(0,0,0,.45),0 1px 2px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+  .dark body{background:var(--bg);color:var(--dark)}
+  .dark header{background:#0B1B2A}
+  .dark .topnav{background:var(--card);border-bottom-color:var(--line)}
+  .dark .doc-section,.dark .stat,.dark .m-row,.dark .passport,.dark .sheet,
+  .dark .scan-box,.dark .toast,.dark .setup-warn,.dark .dash-health,.dark .due-scroll{background:var(--card)}
+  .dark .stat,.dark .due-scroll,.dark .m-row,.dark .qr-pick{border-color:var(--line)}
+  .dark .search-bar input,.dark .due-search input,.dark .due-sel,
+  .dark .ibtn,.dark .check-item .box{background:var(--card);color:var(--dark);border-color:var(--line)}
+  .dark #view-dashboard table.doc thead th,.dark .due-scroll table.doc thead th{background:var(--card)}
+  .dark table.doc td,.dark table.doc.dense tbody td{border-bottom-color:var(--line)}
+  .dark #view-dashboard table.doc tbody tr:hover{background:rgba(255,255,255,.05)}
+  .dark .ibtn:hover{background:rgba(255,255,255,.08);border-color:var(--primary);color:var(--primary)}
+  .dark .qr-pick:hover{background:rgba(255,255,255,.05)}
+  .dark .stat .ic{background:rgba(255,255,255,.06)}
+  .dark .stat.tone-err .ic{background:rgba(224,101,90,.16)}
+  .dark .stat.tone-warn .ic{background:rgba(217,138,60,.16)}
+  .dark .stat.tone-ok .ic{background:rgba(59,164,145,.16)}
+  .dark .stat.alert.tone-err{background:rgba(224,101,90,.12);border-color:rgba(224,101,90,.42)}
+  .dark .stat.alert.tone-warn{background:rgba(217,138,60,.12);border-color:rgba(217,138,60,.42)}
+  .dark .stat.active.tone-err{background:rgba(224,101,90,.18);border-color:rgba(224,101,90,.6)}
+  .dark .stat.active.tone-warn{background:rgba(217,138,60,.18);border-color:rgba(217,138,60,.6)}
+  .dark .stat.active{box-shadow:0 0 0 2px var(--primary),0 6px 16px rgba(0,0,0,.4)}
+  .dark .pill-over{background:rgba(224,101,90,.18);color:#F1948B}
+  .dark .pill-soon{background:rgba(217,138,60,.18);color:#E7B072}
+  .dark .dash-health.err{background:rgba(224,101,90,.14);border-color:rgba(224,101,90,.4);color:#F1948B}
+  .dark .dash-health.warn{background:rgba(217,138,60,.14);border-color:rgba(217,138,60,.4);color:#E7B072}
+  .dark .bar-track{background:rgba(255,255,255,.08)}
+  .dark .ibtn-ok{background:var(--card);border-color:rgba(59,164,145,.5);color:var(--ok)}
+  .dark .ibtn-ok:hover{background:var(--ok);color:#0E1621}
+  .dark .check-item.on,.dark .check-chip{background:rgba(76,159,224,.16)}
+  .dark .doc-badge{background:rgba(255,255,255,.06);border-color:var(--line)}
+  .dark .qr-wrap .qrbox{background:#fff}
