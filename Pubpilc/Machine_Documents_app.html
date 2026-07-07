@@ -136,7 +136,7 @@
   .stat.tone-err .ic{background:#FBECEA;color:var(--err)} .stat.tone-warn .ic{background:#FBF1E3;color:var(--amber)} .stat.tone-ok .ic{background:#E8F3F0;color:var(--ok)}
   .stat .n{font-size:27px;font-weight:800;color:var(--dark);line-height:1;font-variant-numeric:tabular-nums}
   .stat.alert.tone-err .n{color:var(--err)} .stat.alert.tone-warn .n{color:var(--amber)}
-  .stat.alert.tone-err{background:linear-gradient(180deg,#FDF4F3,#fff 62%)} .stat.alert.tone-warn{background:linear-gradient(180deg,#FDF7EE,#fff 62%)}
+  .stat.alert.tone-err{background:#FDECEA;border-color:#F0C7C0} .stat.alert.tone-warn{background:#FDF4E7;border-color:#EAD8BB}
   .stat .l{font-size:11.5px;color:var(--grey);text-transform:uppercase;letter-spacing:.04em;margin-top:6px;font-weight:600;line-height:1.3}
   /* keep legacy hooks harmless */
   .stat .n.warn{color:var(--amber)} .stat .n.err{color:var(--err)}
@@ -166,6 +166,37 @@
   #view-dashboard .doc-section .sec-head h2::before{content:"";width:4px;height:17px;border-radius:3px;background:var(--primary);flex:none}
   #view-dashboard table.doc tbody tr{transition:background .12s}
   #view-dashboard table.doc tbody tr:hover{background:#F6FAFC}
+
+  /* ---- Maintenance-due workbench (filters, dense sortable table, actions) ---- */
+  .due-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px}
+  .due-search{flex:1 1 200px;min-width:150px}
+  .due-search input{width:100%;padding:8px 11px;border:1px solid var(--line);border-radius:9px;font-size:13px;background:#fff}
+  .due-search input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(12,82,131,.12)}
+  .due-sel{padding:8px 10px;border:1px solid var(--line);border-radius:9px;font-size:13px;background:#fff;color:var(--dark);cursor:pointer}
+  .due-sel:focus{outline:none;border-color:var(--primary)}
+  .due-spacer{flex:1 1 auto}
+  .due-tablewrap{overflow-x:auto}
+  table.doc.dense th,table.doc.dense td{padding:7px 10px;font-size:13px}
+  table.doc.dense thead th{font-size:11px;letter-spacing:.03em}
+  table.doc.dense tbody td{border-bottom:1px solid #EEF2F6}
+  table.doc.dense .mlink{font-weight:700;color:var(--primary);text-decoration:none}
+  th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+  th.sortable:hover{color:var(--primary)} th.sorted{color:var(--primary)}
+  th.act-h,td.act-c{text-align:right;white-space:nowrap}
+  .dt.tier-critical{color:var(--err);font-weight:700}
+  .dt.tier-late{color:var(--amber);font-weight:700}
+  .dt.tier-soon{color:var(--dark)}
+  .dl{font-variant-numeric:tabular-nums;font-weight:800;font-size:12.5px}
+  .dl-critical{color:var(--err)} .dl-late{color:var(--amber)} .dl-soon{color:var(--grey)} .dl-fut{color:var(--faint);font-weight:600}
+  .ibtn{display:inline-grid;place-items:center;width:28px;height:28px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;font-size:14px;color:var(--grey);line-height:1;transition:all .12s;vertical-align:middle}
+  .ibtn:hover{border-color:var(--primary);color:var(--primary);background:#F5FAFD}
+  .ibtn:disabled{opacity:.4;cursor:default}
+  .ibtn-ok{color:var(--ok);border-color:#CDE7E0}
+  .ibtn-ok:hover{background:var(--ok);color:#fff;border-color:var(--ok)}
+  .due-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .due-count{font-size:12.5px;color:var(--grey);font-variant-numeric:tabular-nums}
+  .due-pager{display:flex;align-items:center;gap:8px}
+  .due-pg{font-size:13px;font-weight:700;color:var(--dark);font-variant-numeric:tabular-nums;min-width:44px;text-align:center}
   .exp-btns{display:flex;gap:6px}
   .mini{font-size:12px;color:var(--grey)}
   .qr-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
@@ -2358,6 +2389,12 @@ const I18N = {
     col_part: "Part", col_replaced: "Replaced", col_by: "By", col_checks: "Checks",
     by_line: "By line", by_mechanic: "By mechanic",
     nothing_due: "Nothing overdue or due soon. 👍",
+    col_days_late:"Days late", col_actions:"Actions", act_done:"Mark done", act_open:"Open machine",
+    f_all_mech:"All mechanics", f_all_type:"All types", f_all_tier:"All urgency",
+    tier_critical:"Critical (>30d)", tier_late:"Late (8–30d)", tier_soon:"Due soon",
+    search_due_ph:"Search machine, mechanic…", showing:"Showing", showing_of:"of",
+    due_today:"today", due_in:"in", m_marked_done:"Marked done — next service scheduled",
+    confirm_done:"Mark this machine as serviced today? This updates its last-done and next-due dates.",
     no_maint: "No maintenance records yet.",
     no_parts_rep: "No part replacements recorded yet.",
     no_activity: "No activity yet.",
@@ -2435,6 +2472,12 @@ const I18N = {
     col_part: "គ្រឿង​បន្លាស់", col_replaced: "បាន​ប្តូរ", col_by: "ដោយ", col_checks: "ការ​ត្រួតពិនិត្យ",
     by_line: "តាម​ខ្សែ", by_mechanic: "តាម​ជាង",
     nothing_due: "គ្មាន​អ្វី​ហួស​កំណត់ ឬ​ជិត​ដល់​ទេ។ 👍",
+    col_days_late:"ថ្ងៃ​ហួស", col_actions:"សកម្មភាព", act_done:"សម្គាល់​ថា​រួច", act_open:"បើក​ម៉ាស៊ីន",
+    f_all_mech:"ជាង​ទាំងអស់", f_all_type:"ប្រភេទ​ទាំងអស់", f_all_tier:"កម្រិត​ទាំងអស់",
+    tier_critical:"ធ្ងន់ធ្ងរ (>៣០ថ្ងៃ)", tier_late:"យឺត (៨–៣០ថ្ងៃ)", tier_soon:"ជិត​ដល់",
+    search_due_ph:"ស្វែងរក​ម៉ាស៊ីន ជាង…", showing:"បង្ហាញ", showing_of:"នៃ",
+    due_today:"ថ្ងៃ​នេះ", due_in:"ក្នុង", m_marked_done:"បាន​សម្គាល់​ថា​រួច — កំណត់​ការ​ថែទាំ​បន្ទាប់",
+    confirm_done:"សម្គាល់​ម៉ាស៊ីន​នេះ​ថា​បាន​ថែទាំ​ថ្ងៃ​នេះ? វា​នឹង​ធ្វើ​បច្ចុប្បន្នភាព​កាល​បរិច្ឆេទ​ចុងក្រោយ និង​បន្ទាប់។",
     no_maint: "មិន​ទាន់​មាន​កំណត់ត្រា​ថែទាំ​ទេ។",
     no_parts_rep: "មិន​ទាន់​មាន​ការ​ប្តូរ​គ្រឿង​បន្លាស់​ទេ។",
     no_activity: "មិន​ទាន់​មាន​សកម្មភាព​ទេ។",
@@ -3219,6 +3262,96 @@ async function loadDashboard(){
 }
 function machineName(code){ const m=MACHINES.find(x=>x.code===code); return m?`${m.machine_type||''}${m.brand?' · '+m.brand:''}`:''; }
 function ym(d){ return d? String(d).slice(0,7):''; }
+let DUE = { rows:[], q:'', mech:'', type:'', tier:'', sortKey:'daysLate', sortDir:'desc', page:1, per:25 };
+function dueFiltered(){
+  let r = DUE.rows.slice();
+  const q = DUE.q.trim().toLowerCase();
+  if(q) r = r.filter(x=>(x.code+' '+x.type+' '+x.brand+' '+x.mechanic).toLowerCase().includes(q));
+  if(DUE.mech) r = r.filter(x=>x.mechanic===DUE.mech);
+  if(DUE.type) r = r.filter(x=>x.type===DUE.type);
+  if(DUE.tier) r = r.filter(x=>x.tier===DUE.tier);
+  const k=DUE.sortKey, dir=DUE.sortDir==='asc'?1:-1;
+  r.sort((a,b)=>{
+    if(k==='daysLate') return (a.daysLate-b.daysLate)*dir;
+    const av=String(a[k]||'').toLowerCase(), bv=String(b[k]||'').toLowerCase();
+    return av<bv?-dir:av>bv?dir:0;
+  });
+  return r;
+}
+function daysLateCell(x){
+  if(x.daysLate>0) return `<span class="dl dl-${x.tier}">+${x.daysLate}d</span>`;
+  if(x.daysLate===0) return `<span class="dl dl-soon">${TX('due_today')}</span>`;
+  return `<span class="dl dl-fut">${TX('due_in')} ${Math.abs(x.daysLate)}d</span>`;
+}
+function renderDueTable(){
+  const box=$('dash-due');
+  if(!DUE.rows.length){ box.innerHTML=`<div class="empty">${TX('nothing_due')}</div>`; return; }
+  const mechs=[...new Set(DUE.rows.map(r=>r.mechanic).filter(Boolean))].sort();
+  const types=[...new Set(DUE.rows.map(r=>r.type).filter(Boolean))].sort();
+  const opt=(v,label,sel)=>`<option value="${esc(v)}"${sel===v?' selected':''}>${esc(label)}</option>`;
+  const rows=dueFiltered();
+  const total=rows.length;
+  const pages=Math.max(1,Math.ceil(total/DUE.per));
+  if(DUE.page>pages) DUE.page=pages;
+  const start=(DUE.page-1)*DUE.per;
+  const pageRows=rows.slice(start,start+DUE.per);
+  const caret=k=>DUE.sortKey===k?(DUE.sortDir==='asc'?' ▲':' ▼'):'';
+  const th=(k,label)=>`<th class="sortable${DUE.sortKey===k?' sorted':''}" data-sort="${k}">${label}${caret(k)}</th>`;
+  box.innerHTML=`
+  <div class="due-controls">
+    <div class="due-search"><input id="due-q" placeholder="${TX('search_due_ph')}" value="${esc(DUE.q)}"></div>
+    <select id="due-mech" class="due-sel"><option value="">${TX('f_all_mech')}</option>${mechs.map(m=>opt(m,m,DUE.mech)).join('')}</select>
+    <select id="due-type" class="due-sel"><option value="">${TX('f_all_type')}</option>${types.map(t=>opt(t,t,DUE.type)).join('')}</select>
+    <select id="due-tier" class="due-sel"><option value="">${TX('f_all_tier')}</option>${opt('critical',TX('tier_critical'),DUE.tier)}${opt('late',TX('tier_late'),DUE.tier)}${opt('soon',TX('tier_soon'),DUE.tier)}</select>
+    <div class="due-spacer"></div>
+    <select id="due-per" class="due-sel">${[25,50,100].map(n=>`<option value="${n}"${DUE.per==n?' selected':''}>${n}</option>`).join('')}</select>
+  </div>
+  <div class="due-tablewrap"><table class="doc dense"><thead><tr>
+    ${th('code',TX('col_machine'))}${th('type',TX('col_type'))}${th('mechanic',TX('col_mechanic'))}${th('next_due',TX('col_nextdue'))}${th('daysLate',TX('col_days_late'))}<th class="act-h">${TX('col_actions')}</th>
+  </tr></thead><tbody>${
+    pageRows.map(x=>`<tr>
+      <td><a href="#" data-open="${esc(x.code)}" class="mlink">${esc(x.code)}</a></td>
+      <td>${esc(x.type||'—')}${x.brand?`<div class="upd">${esc(x.brand)}</div>`:''}</td>
+      <td>${esc(x.mechanic||'—')}</td>
+      <td><span class="dt tier-${x.tier}">${esc(x.next_due)}</span></td>
+      <td>${daysLateCell(x)}</td>
+      <td class="act-c">
+        <button class="ibtn ibtn-ok" data-done="${x.id}" title="${TX('act_done')}" aria-label="${TX('act_done')}">✓</button>
+        <button class="ibtn" data-go="${esc(x.code)}" title="${TX('act_open')}" aria-label="${TX('act_open')}">↗</button>
+      </td>
+    </tr>`).join('')
+  }</tbody></table></div>
+  <div class="due-foot">
+    <span class="due-count">${TX('showing')} ${total?start+1:0}–${Math.min(start+DUE.per,total)} ${TX('showing_of')} ${total}</span>
+    <div class="due-pager">
+      <button class="ibtn" id="due-prev" ${DUE.page<=1?'disabled':''}>‹</button>
+      <span class="due-pg">${DUE.page}/${pages}</span>
+      <button class="ibtn" id="due-next" ${DUE.page>=pages?'disabled':''}>›</button>
+    </div>
+  </div>`;
+  const q=$('due-q');
+  if(q) q.oninput=()=>{ const pos=q.selectionStart; DUE.q=q.value; DUE.page=1; renderDueTable(); const n=$('due-q'); if(n){ n.focus(); try{n.setSelectionRange(pos,pos);}catch(e){} } };
+  $('due-mech').onchange=e=>{ DUE.mech=e.target.value; DUE.page=1; renderDueTable(); };
+  $('due-type').onchange=e=>{ DUE.type=e.target.value; DUE.page=1; renderDueTable(); };
+  $('due-tier').onchange=e=>{ DUE.tier=e.target.value; DUE.page=1; renderDueTable(); };
+  $('due-per').onchange=e=>{ DUE.per=+e.target.value; DUE.page=1; renderDueTable(); };
+  const pv=$('due-prev'); if(pv) pv.onclick=()=>{ if(DUE.page>1){DUE.page--; renderDueTable();} };
+  const nx=$('due-next'); if(nx) nx.onclick=()=>{ if(DUE.page<pages){DUE.page++; renderDueTable();} };
+  box.querySelectorAll('th.sortable').forEach(h=>h.onclick=()=>{ const k=h.dataset.sort; if(DUE.sortKey===k){DUE.sortDir=DUE.sortDir==='asc'?'desc':'asc';} else {DUE.sortKey=k; DUE.sortDir=(k==='daysLate')?'desc':'asc';} renderDueTable(); });
+  box.querySelectorAll('[data-open],[data-go]').forEach(a=>a.onclick=e=>{ e.preventDefault(); gotoMachine(a.dataset.open||a.dataset.go); });
+  box.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>markDone(+b.dataset.done));
+}
+async function markDone(id){
+  const rec=DASH.maint.find(t=>t.id===id); if(!rec) return;
+  if(!confirm(TX('confirm_done'))) return;
+  const now=new Date(); const done=now.toISOString().slice(0,10);
+  const nd=new Date(now); if((rec.maint_type||'monthly')==='weekly') nd.setDate(nd.getDate()+7); else nd.setMonth(nd.getMonth()+1);
+  const upd={ date_done:done, last_done:done, next_due:nd.toISOString().slice(0,10), updated_at:new Date().toISOString(), updated_by:WHO||'dashboard' };
+  const res=await sb.from('maintenance_schedule').update(upd).eq('id',id);
+  if(res.error){ toast('Update failed: '+res.error.message,'err'); return; }
+  toast(TX('m_marked_done'),'ok');
+  await loadDashboard();
+}
 function renderDashboard(){
   const today=new Date(); today.setHours(0,0,0,0);
   const thisMonth = new Date().toISOString().slice(0,7);
@@ -3258,21 +3391,16 @@ function renderDashboard(){
   const dd=$('dash-date');
   if(dd){ try{ dd.textContent=new Date().toLocaleDateString(LANG==='km'?'km-KH':'en-GB',{day:'numeric',month:'short',year:'numeric'}); }catch(e){ dd.textContent=new Date().toISOString().slice(0,10); } }
 
-  // due table (overdue first, then soon)
-  const dueList=[...overdue.map(t=>({...t,_st:'overdue'})), ...soon.map(t=>({...t,_st:'soon'}))]
-    .sort((a,b)=>String(a.next_due).localeCompare(String(b.next_due)));
-  const dueBox=$('dash-due');
-  if (!dueList.length){ dueBox.innerHTML=`<div class="empty">${TX('nothing_due')}</div>`; }
-  else {
-    dueBox.innerHTML=`<table class="doc"><thead><tr><th>${TX('col_machine')}</th><th>${TX('col_type')}</th><th>${TX('col_mechanic')}</th><th>${TX('col_nextdue')}</th></tr></thead><tbody>`+
-      dueList.map(t=>`<tr>
-        <td><a href="#" data-open="${esc(t.machine_code)}" style="font-weight:600;color:var(--primary);text-decoration:none">${esc(t.machine_code)}</a><div class="upd">${esc(machineName(t.machine_code))}</div></td>
-        <td>${t.maint_type==='weekly'?TX('weekly_op'):TX('monthly_mech')}</td>
-        <td>${esc(t.mechanic||'—')}</td>
-        <td><span class="due-cell"><span class="dt">${esc(t.next_due)}</span><span class="pill ${t._st==='overdue'?'pill-over':'pill-soon'}">${t._st==='overdue'?TX('st_overdue'):TX('st_due7')}</span></span></td>
-      </tr>`).join('')+`</tbody></table>`;
-    dueBox.querySelectorAll('[data-open]').forEach(a=>a.onclick=(e)=>{e.preventDefault(); gotoMachine(a.dataset.open);});
-  }
+  // maintenance due -> build dataset for the interactive workbench
+  const dayMs=86400000;
+  DUE.rows = [...overdue, ...soon].map(t=>{
+    const dl=Math.round((today - new Date(t.next_due))/dayMs);
+    const tier = dl>30?'critical':(dl>7?'late':'soon');
+    const m=MACHINES.find(x=>x.code===t.machine_code);
+    return { id:t.id, code:t.machine_code, type:(m&&m.machine_type)||'', brand:(m&&m.brand)||'',
+             mechanic:t.mechanic||'', maint_type:t.maint_type||'monthly', next_due:t.next_due, daysLate:dl, tier };
+  });
+  renderDueTable();
 
   // by line & mechanic
   const byLine={}, byMech={};
