@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PACTICS · Machine Documents</title>
+  <!-- Stylesheets, split by concern (load order = cascade order) -->
+  <link rel="stylesheet" href="../src/styles/tokens.css">
+  <link rel="stylesheet" href="../src/styles/base.css">
+  <link rel="stylesheet" href="../src/styles/components.css">
+  <link rel="stylesheet" href="../src/styles/dashboard.css">
+  <!-- Optional vendor libs (Excel export, QR scan, QR print). Safe to defer. -->
+  <script defer src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+  <script defer src="https://unpkg.com/jsqr/dist/jsQR.js"></script>
+  <script defer src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="head-row">
+      <div class="brand">PACTICS<small data-i18n="subtitle">Machine Documents</small></div>
+      <div class="spacer" style="flex:1"></div>
+      <button id="scan-btn" class="btn btn-primary btn-sm" data-i18n="scan">Scan</button>
+      <button id="setname-btn" class="linkish" data-i18n="setName">Set your name</button>
+      <button id="lang-btn" class="lang-btn">ខ្មែរ</button>
+    </div>
+  </header>
+
+  <nav class="topnav" id="topnav">
+    <div class="topnav-inner">
+      <button data-nav="list" data-i18n="nav_machines">Machines</button>
+      <button data-nav="dashboard" class="active" data-i18n="nav_dashboard">Dashboard</button>
+      <button data-nav="qrprint" data-i18n="nav_qr">Print QR</button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Machines list (STUB view — see src/js/components/machineList.js) -->
+    <section id="view-list" class="hidden"><div class="empty">Machine list — port machineList.js</div></section>
+
+    <!-- Dashboard (fully ported vertical) -->
+    <section id="view-dashboard">
+      <div class="dash-head">
+        <div>
+          <div class="dash-eyebrow">PACTICS · <span id="dash-date"></span></div>
+          <div class="dash-title" data-i18n="nav_dashboard">Dashboard</div>
+        </div>
+        <div class="dash-health" id="dash-health"></div>
+      </div>
+      <div class="dash-actions"><div class="stat-row" id="dash-stats"></div></div>
+
+      <div class="doc-section">
+        <div class="sec-head"><h2 data-i18n="maint_due">Maintenance due</h2>
+          <div class="exp-btns">
+            <button class="btn btn-secondary btn-sm" data-exp="maint-csv">Export CSV</button>
+            <button class="btn btn-secondary btn-sm" data-exp="maint-xlsx">Export Excel</button>
+          </div>
+        </div>
+        <div id="dash-due"></div>
+      </div>
+
+      <div class="doc-section"><div class="sec-head"><h2 data-i18n="maint_by">Maintenance by line & mechanic</h2></div><div id="dash-breakdown"></div></div>
+      <div class="doc-section"><div class="sec-head"><h2 data-i18n="parts_recent">Recent part replacements</h2>
+        <div class="exp-btns"><button class="btn btn-secondary btn-sm" data-exp="parts-csv">Export CSV</button><button class="btn btn-secondary btn-sm" data-exp="parts-xlsx">Export Excel</button></div>
+      </div><div id="dash-parts"></div></div>
+      <div class="doc-section"><div class="sec-head"><h2 data-i18n="recent_activity">Recent activity</h2></div><div id="dash-activity"></div></div>
+    </section>
+
+    <!-- Print QR (STUB view — see src/js/components/qrPrint.js) -->
+    <section id="view-qrprint" class="hidden"><div class="empty">Print QR — port qrPrint.js</div></section>
+    <!-- Machine passport / detail (STUB view — see src/js/components/machinePassport.js) -->
+    <section id="view-detail" class="hidden"><div class="empty">Passport — port machinePassport.js</div></section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- ES-module entry. No bundler required. -->
+  <script type="module" src="../src/js/main.js"></script>
+</body>
+</html>

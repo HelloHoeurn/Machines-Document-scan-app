@@ -1,0 +1,102 @@
+/* PACTICS Machine Documents — Dashboard: KPI tiles, health chip, due workbench, bars
+   Extracted verbatim from the single-file app; grouped by concern. */
+
+/* ---------- Dashboard visual refresh ---------- */
+  .dash-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:2px 0 14px;flex-wrap:wrap}
+.dash-eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--faint);text-transform:uppercase}
+.dash-title{font-size:22px;font-weight:800;color:var(--dark);line-height:1.15;margin-top:3px}
+.dash-health{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ok)}
+.dash-health .dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.dash-health.warn{background:#FBF1E3;border-color:#F0DCC0;color:var(--amber)}
+.dash-health.err{background:#FBECEA;border-color:#F2D6D2;color:var(--err)}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin-bottom:8px}
+.stat{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:15px 15px 13px;overflow:hidden;transition:transform .15s ease,box-shadow .15s ease}
+.stat:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(8,56,90,.10)}
+.stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--primary)}
+.stat.tone-err::before{background:var(--err)}
+.stat.tone-warn::before{background:var(--amber)}
+.stat.tone-ok::before{background:var(--ok)}
+.stat .stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.stat .ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--bg);color:var(--primary);flex:none}
+.stat .ic svg{width:17px;height:17px;display:block}
+.stat.tone-err .ic{background:#FBECEA;color:var(--err)}
+.stat.tone-warn .ic{background:#FBF1E3;color:var(--amber)}
+.stat.tone-ok .ic{background:#E8F3F0;color:var(--ok)}
+.stat .n{font-size:27px;font-weight:800;color:var(--dark);line-height:1;font-variant-numeric:tabular-nums}
+.stat.alert.tone-err .n{color:var(--err)}
+.stat.alert.tone-warn .n{color:var(--amber)}
+.stat.alert.tone-err{background:#FDECEA;border-color:#F0C7C0}
+.stat.alert.tone-warn{background:#FDF4E7;border-color:#EAD8BB}
+.stat .l{font-size:11.5px;color:var(--grey);text-transform:uppercase;letter-spacing:.04em;margin-top:6px;font-weight:600;line-height:1.3}
+/* keep legacy hooks harmless */
+  .stat .n.warn{color:var(--amber)}
+.stat .n.err{color:var(--err)}
+/* status pills (due list) */
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:3px 9px 3px 8px;border-radius:999px;letter-spacing:.02em;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.pill-over{background:#FBECEA;color:var(--err)}
+.pill-soon{background:#FBF1E3;color:var(--amber)}
+.due-cell{display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap}
+.due-cell .dt{font-variant-numeric:tabular-nums;color:var(--grey)}
+/* breakdown bar charts */
+  .bd-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 26px}
+@media(max-width:620px){ .bd-grid{grid-template-columns:1fr} }
+.bd-col-h{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:0 0 9px;display:flex;align-items:center;gap:7px}
+.bd-col-h::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--primary)}
+.bd-col.mech .bd-col-h::before{background:var(--ok)}
+.bar-row{display:grid;grid-template-columns:100px 1fr 28px;align-items:center;gap:10px;padding:4px 0}
+.bar-row .bl{font-size:13px;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{height:8px;border-radius:6px;background:var(--bg)}
+.bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--primary),#2C77A8);min-width:3px;transition:width .4s ease}
+.bd-col.mech .bar-fill{background:linear-gradient(90deg,var(--ok),#3E9E8C)}
+.bar-row .bv{font-size:13px;font-weight:800;color:var(--dark);font-variant-numeric:tabular-nums;text-align:right}
+/* dashboard section tick + row hover */
+  #view-dashboard .doc-section .sec-head h2{display:flex;align-items:center;gap:9px}
+#view-dashboard .doc-section .sec-head h2::before{content:"";width:4px;height:17px;border-radius:3px;background:var(--primary);flex:none}
+#view-dashboard table.doc tbody tr{transition:background .12s}
+#view-dashboard table.doc tbody tr:hover{background:#F6FAFC}
+/* ---- Maintenance-due workbench (filters, dense sortable table, actions) ---- */
+  .due-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px}
+.due-search{flex:1 1 200px;min-width:150px}
+.due-search input{width:100%;padding:8px 11px;border:1px solid var(--line);border-radius:9px;font-size:13px;background:#fff}
+.due-search input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(12,82,131,.12)}
+.due-sel{padding:8px 10px;border:1px solid var(--line);border-radius:9px;font-size:13px;background:#fff;color:var(--dark);cursor:pointer}
+.due-sel:focus{outline:none;border-color:var(--primary)}
+.due-spacer{flex:1 1 auto}
+.due-tablewrap{overflow-x:auto}
+.dl{font-variant-numeric:tabular-nums;font-weight:800;font-size:12.5px}
+.dl-critical{color:var(--err)}
+.dl-late{color:var(--amber)}
+.dl-soon{color:var(--grey)}
+.dl-fut{color:var(--faint);font-weight:600}
+.ibtn{display:inline-grid;place-items:center;width:28px;height:28px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;font-size:14px;color:var(--grey);line-height:1;transition:all .12s;vertical-align:middle}
+.ibtn:hover{border-color:var(--primary);color:var(--primary);background:#F5FAFD}
+.ibtn:disabled{opacity:.4;cursor:default}
+.ibtn-ok{color:var(--ok);border-color:#CDE7E0}
+.ibtn-ok:hover{background:var(--ok);color:#fff;border-color:var(--ok)}
+.due-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap}
+.due-count{font-size:12.5px;color:var(--grey);font-variant-numeric:tabular-nums}
+.due-pager{display:flex;align-items:center;gap:8px}
+.due-pg{font-size:13px;font-weight:700;color:var(--dark);font-variant-numeric:tabular-nums;min-width:44px;text-align:center}
+/* clickable KPI filter cards */
+  .stat.clickable{cursor:pointer}
+.stat.clickable:hover{border-color:var(--primary)}
+.stat.clickable:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.stat.active{box-shadow:0 0 0 2px var(--primary),0 6px 16px rgba(8,56,90,.12)}
+.stat.active.tone-err{box-shadow:0 0 0 2px var(--err),0 6px 16px rgba(192,57,43,.16);background:#FDECEA;border-color:#F0C7C0}
+.stat.active.tone-warn{box-shadow:0 0 0 2px var(--amber),0 6px 16px rgba(196,106,27,.16);background:#FDF4E7;border-color:#EAD8BB}
+/* fixed-height internal-scroll container for the due table */
+  .due-scroll{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
+.due-scroll table.doc.dense{margin:0;width:100%;border-collapse:separate;border-spacing:0}
+#view-dashboard .due-scroll table.doc thead th{top:0;z-index:6;box-shadow:inset 0 -1px 0 var(--line)}
+.due-scrollcount{font-size:12.5px;color:var(--grey);margin-top:10px;font-variant-numeric:tabular-nums}
+/* Freeze table header rows on the dashboard (Excel-style Freeze Panes).
+     Offset 96px = sticky header (49px) + sticky tab bar (~47px), so the
+     column headers stay pinned just under the tabs while the list scrolls. */
+  #view-dashboard table.doc thead th{
+    position:sticky; top:96px; z-index:5;
+    background:#fff;
+    box-shadow:inset 0 -1px 0 var(--line);
+  }
+.due-soon{color:var(--amber);font-weight:700}
+.due-over{color:var(--err);font-weight:700}
