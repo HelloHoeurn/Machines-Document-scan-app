@@ -11,6 +11,6 @@ export function navigate(view) {
 /** Jump to a machine's passport from anywhere (e.g. the dashboard). */
 export async function gotoMachine(code) {
   navigate('list');
-  const { openMachine } = await import('./components/machineList.js');
+  const { openMachine } = await import('./components/machinePassport.js');
   openMachine(code);
 }
