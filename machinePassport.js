@@ -1,9 +1,13 @@
 // Machine detail (passport) view.
+// Layout: [ details (left) ] [ photo (centered) ] [ QR (right) ]
 // Photo strategy, in priority order:
-//   1) machine.image_url (a saved, permanent photo)          -> show it
-//   2) a reference image in OUR OWN storage by brand/model   -> show it (display-only)
-//   3) a type-based blueprint schematic (always available)   -> looks populated instantly
-// A manual upload or a dropped URL always overrides and is saved to Supabase.
+//   1) machine.image_url (saved photo)                          -> show it
+//   2) reference image in OUR OWN storage by brand/model        -> show it (display-only)
+//   3) parse the machine's catalog/manuals:
+//        a) an attached image document                          -> show it
+//        b) first page of an attached PDF manual (pdf.js)       -> show thumbnail
+//   4) type-based blueprint schematic                           -> always looks populated
+// A manual upload or dropped URL overrides everything and is saved to Supabase.
 import { store } from '../store.js';
 import { sb } from '../supabaseClient.js';
 import { SUPABASE_URL, TABLES } from '../config.js';
@@ -15,7 +19,7 @@ import { $ } from '../utils/dom.js';
 const PHOTO_BUCKET = 'catalogs';
 const MAX_PHOTO_BYTES = 25 * 1024 * 1024;
 
-// ---- Option B: clean blueprint line-art, chosen by machine type ----
+/* ---------- Option B: blueprint schematics by machine type ---------- */
 const SEWING_ART = `
   <rect x="16" y="72" width="100" height="14" rx="3"/>
   <path d="M96 72 V44 q0 -12 12 -12"/>
@@ -44,7 +48,7 @@ function blueprint(type) {
   </svg>`;
 }
 
-// ---- Photo cell markup ----
+/* ---------- photo cell markup ---------- */
 function photoInner(m) {
   if (m.image_url) return `<img src="${esc(m.image_url)}" alt="${esc(m.code)}">`;
   return `<div class="bpwrap">${blueprint(m.machine_type)}<span class="bptag">${TX('schematic')}</span></div>`;
@@ -66,15 +70,16 @@ export function openMachine(code) {
   view.classList.remove('hidden');
   window.scrollTo(0, 0);
 
+  // DOM order = details, photo, QR  -> grid 1fr/auto/1fr centers the photo.
   view.innerHTML = `
     <div class="detail-top"><span class="back" id="back">← ${TX('all_machines')}</span></div>
     <div class="passport" id="passport">
-      ${photoBlock(m)}
       <div class="pinfo">
         <div class="pcode">${esc(m.code)}</div>
         <div class="pmeta">${esc(m.machine_type || '')}${m.brand ? ' · ' + esc(m.brand) : ''}${m.model ? ' · ' + esc(m.model) : ''}</div>
         <div class="pmeta">${m.serial ? 'Serial ' + esc(m.serial) : ''}${m.fixed_asset ? ' · FA ' + esc(m.fixed_asset) : ''}</div>
       </div>
+      ${photoBlock(m)}
       <div class="qr-wrap"><div class="qrbox" id="qr"></div><div class="lbl">${esc(m.code)}</div>
         <button class="btn btn-secondary btn-sm" id="print-qr" style="margin-top:8px">${TX('print_qr')}</button>
       </div>
@@ -89,10 +94,10 @@ export function openMachine(code) {
   $('print-qr').onclick = async () => { try { const mod = await import('./qrPrint.js'); mod.printQR?.(m); } catch (e) { toast('Print view not ported yet', 'err'); } };
 
   wirePhotoCell();
-  if (!m.image_url) tryReferenceImage(m); // Option A (safe): our own storage
+  if (!m.image_url) autoResolveImage(m);
 }
 
-// ---- Interactions: click-to-upload + drag/drop (file OR url) ----
+/* ---------- interactions: click-to-upload + drag/drop (file OR url) ---------- */
 function wirePhotoCell() {
   const el = $('pphoto');
   if (!el) return;
@@ -113,26 +118,80 @@ function wirePhotoCell() {
   });
 }
 
-// ---- Option A helper: look for OUR OWN reference image by brand/model ----
+/* ---------- automatic resolution (display-only; never auto-saves) ---------- */
+async function autoResolveImage(m) {
+  const ref = await findReferenceImage(m);         // 2) our own brand/model reference
+  if (ref) return swapPhoto(m, ref);
+  const doc = await findImageFromDocs(m);          // 3) catalog/manual image or PDF cover
+  if (doc) return swapPhoto(m, doc);               // 4) else the schematic stays
+}
+
+function swapPhoto(m, url) {
+  if (store.get().current?.code !== m.code) return;              // navigated away
+  const holder = $('pphoto');
+  if (!holder || !holder.querySelector('.bpwrap')) return;       // don't cover a real image
+  holder.innerHTML = `<img src="${esc(url)}" alt="${esc(m.code)}"><div class="edithint">${TX('change_photo')}</div>`;
+}
+
 const loadable = (url) => new Promise((res) => { const im = new Image(); im.onload = () => res(true); im.onerror = () => res(false); im.src = url; });
 
-async function tryReferenceImage(m) {
-  if (!m.brand && !m.model) return;
-  const bp = $('pphoto') && $('pphoto').querySelector('.bpwrap');
-  if (!bp) return; // a real image is already showing
+async function findReferenceImage(m) {
+  if (!m.brand && !m.model) return null;
   const key = [m.brand, m.model].filter(Boolean).join('/').replace(/[^\w./-]+/g, '_');
   const base = `${SUPABASE_URL}/storage/v1/object/public/${PHOTO_BUCKET}/machine-refs/${key}`;
   for (const ext of ['.jpg', '.jpeg', '.png', '.webp']) {
-    if (store.get().current?.code !== m.code) return;             // navigated away
-    if (await loadable(base + ext)) {
-      const still = $('pphoto') && $('pphoto').querySelector('.bpwrap');
-      if (still) { const img = document.createElement('img'); img.src = base + ext; img.alt = m.code; still.replaceWith(img); }
-      return;
-    }
+    if (await loadable(base + ext)) return base + ext;
   }
+  return null;
 }
 
-// ---- Manual actions override the auto states AND persist to Supabase ----
+const docPublicUrl = (filePath) => `${SUPABASE_URL}/storage/v1/object/public/${filePath}`;
+const isImageDoc = (d) => /^image\//.test(d.mime || '') || /\.(png|jpe?g|webp|gif)$/i.test(d.file_name || '');
+const isPdfDoc = (d) => (d.mime || '').includes('pdf') || /\.pdf$/i.test(d.file_name || '');
+
+async function fetchMachineDocs(m) {
+  const qs = [sb.from(TABLES.documents).select('*').eq('scope', 'machine').eq('machine_code', m.code)];
+  if (m.model) qs.push(sb.from(TABLES.documents).select('*').eq('scope', 'model').eq('model', m.model));
+  const res = await Promise.all(qs);
+  return res.flatMap((r) => (r && r.data) || []);
+}
+
+async function findImageFromDocs(m) {
+  let docs;
+  try { docs = await fetchMachineDocs(m); } catch (e) { return null; }
+  if (!docs || !docs.length) return null;
+  const img = docs.find(isImageDoc);
+  if (img) return docPublicUrl(img.file_path);
+  const pdf = docs.find(isPdfDoc);
+  if (pdf) return await pdfThumb(docPublicUrl(pdf.file_path));
+  return null;
+}
+
+/* ---------- lazy pdf.js: render page 1 of a manual to a thumbnail ---------- */
+let _pdfjs;
+async function getPdfjs() {
+  if (_pdfjs) return _pdfjs;
+  const lib = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/build/pdf.min.mjs');
+  lib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/build/pdf.worker.min.mjs';
+  _pdfjs = lib;
+  return lib;
+}
+async function pdfThumb(url) {
+  try {
+    const pdfjs = await getPdfjs();
+    const pdf = await pdfjs.getDocument({ url }).promise;
+    const page = await pdf.getPage(1);
+    const raw = page.getViewport({ scale: 1 });
+    const scale = Math.min(400 / raw.width, 2);
+    const vp = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    canvas.width = vp.width; canvas.height = vp.height;
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+    return canvas.toDataURL('image/jpeg', 0.72);
+  } catch (e) { return null; }
+}
+
+/* ---------- manual actions override + persist ---------- */
 export async function uploadMachinePhoto(file) {
   const m = store.get().current;
   if (!file || !m) return;
