@@ -109,3 +109,9 @@ table.doc .row-actions{white-space:nowrap;text-align:right}
 .passport .pphoto:hover .edithint{opacity:1}
 .dark .passport .pphoto{background:rgba(255,255,255,.03)}
 .dark .passport .pphoto .edithint{background:rgba(0,0,0,.6)}
+
+/* Machine passport: auto blueprint schematic + drag-drop state */
+.passport .pphoto .bpwrap{width:100%;height:100%;position:relative;color:var(--faint)}
+.passport .pphoto .bp{width:100%;height:100%;display:block}
+.passport .pphoto .bptag{position:absolute;top:4px;right:5px;font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);opacity:.75;background:var(--card);padding:1px 4px;border-radius:4px}
+.passport .pphoto.drag{outline:2px dashed var(--primary);outline-offset:-3px}
