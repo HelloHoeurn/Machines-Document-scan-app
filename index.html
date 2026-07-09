@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0068)file:///C:/Users/hello.hoeun/Downloads/Machine_Documents_app_16.html -->
+<!-- saved from url=(0051)file:///C:/Users/hello.hoeun/Downloads/index_5.html -->
 <html lang="km"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -53,7 +53,7 @@
     "https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"
   ], function(ok){ window.__libs.jsqr=ok; window.dispatchEvent(new Event('lib-scanner')); });
 })();
-</script>
+</script><script src="./PACTICS — Machine Documents30_files/supabase.min.js.download"></script><script src="./PACTICS — Machine Documents30_files/qrcode.min.js.download"></script><script src="./PACTICS — Machine Documents30_files/xlsx.full.min.js.download"></script><script src="./PACTICS — Machine Documents30_files/html5-qrcode.min.js.download"></script><script src="./PACTICS — Machine Documents30_files/jsQR.js.download"></script>
 <style>
   :root{
     --primary:#0C5283; --dark:#08385A; --ok:#1F7A6B; --amber:#C46A1B; --err:#C0392B;
@@ -368,7 +368,7 @@
   .toast.err{background:var(--err)} .toast.ok{background:var(--ok)}
   .setup-warn{max-width:560px;margin:60px auto;padding:24px;background:#fff;border-radius:12px}
 </style>
-<script>try{if(localStorage.getItem('docs_theme')==='dark')document.documentElement.classList.add('dark');}catch(e){}</script></head>
+<script>try{if(localStorage.getItem('docs_theme')==='dark')document.documentElement.classList.add('dark');}catch(e){}</script><script src="./PACTICS — Machine Documents30_files/supabase.min(1).js.download"></script></head>
 <body>
 
 <div id="app">
@@ -3081,8 +3081,12 @@ async function findReferenceImage(m){
     }
   }
   if(!best) return null;
-  const url=`${SUPABASE_URL}/storage/v1/object/public/catalogs/machine-refs/${best.file}`;
-  return (await _loadable(url)) ? url : null;
+  const REF_BASES=[
+    `${SUPABASE_URL}/storage/v1/object/public/catalogs/machine-refs/`,
+    `${SUPABASE_URL}/storage/v1/object/public/machine-refs/`
+  ];
+  for(const base of REF_BASES){ const u=base+best.file; if(await _loadable(u)) return u; }
+  return null;
 }
 function _isImageDoc(d){ return /^image\//.test(d.mime||'')||/\.(png|jpe?g|webp|gif)$/i.test(d.file_name||''); }
 function _isPdfDoc(d){ return (d.mime||'').includes('pdf')||/\.pdf$/i.test(d.file_name||''); }
