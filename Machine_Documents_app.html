@@ -3081,8 +3081,14 @@ async function findReferenceImage(m){
     }
   }
   if(!best) return null;
-  const url=`${SUPABASE_URL}/storage/v1/object/public/catalogs/machine-refs/${best.file}`;
-  return (await _loadable(url)) ? url : null;
+  const baseName=best.file.replace(/\.[^.]+$/,'');
+  const REF_BASES=[
+    `${SUPABASE_URL}/storage/v1/object/public/catalogs/machine-refs/`,
+    `${SUPABASE_URL}/storage/v1/object/public/machine-refs/`
+  ];
+  const EXTS=['.png','.webp','.jpg','.jpeg'];   // prefer transparent .png
+  for(const base of REF_BASES){ for(const ext of EXTS){ const u=base+baseName+ext; if(await _loadable(u)) return u; } }
+  return null;
 }
 function _isImageDoc(d){ return /^image\//.test(d.mime||'')||/\.(png|jpe?g|webp|gif)$/i.test(d.file_name||''); }
 function _isPdfDoc(d){ return (d.mime||'').includes('pdf')||/\.pdf$/i.test(d.file_name||''); }
