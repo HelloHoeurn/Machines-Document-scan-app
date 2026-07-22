@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- saved from url=(0068)file:///C:/Users/hello.hoeun/Downloads/Machine_Documents_app_19.html -->
-<html lang="km"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- saved from url=(0068)file:///C:/Users/hello.hoeun/Downloads/Machine_Documents_app_22.html -->
+<html lang="km" data-theme="dark"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>PACTICS — Machine Documents</title>
 <link rel="preconnect" href="https://fonts.googleapis.com/">
 <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
-<link href="./PACTICS — Machine Documents-v7_files/css2" rel="stylesheet">
+<link href="./PACTICS — Machine Documents-v8_files/css2" rel="stylesheet">
 <script>
 // Load required libraries, trying multiple CDNs so a blocked one doesn't break the app.
 (function(){
@@ -54,21 +54,49 @@
     "https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"
   ], function(ok){ window.__libs.jsqr=ok; window.dispatchEvent(new Event('lib-scanner')); });
 })();
-</script><script src="./PACTICS — Machine Documents-v7_files/supabase.min.js.download"></script><script src="./PACTICS — Machine Documents-v7_files/qrcode.min.js.download"></script><script src="./PACTICS — Machine Documents-v7_files/xlsx.full.min.js.download"></script><script src="./PACTICS — Machine Documents-v7_files/html5-qrcode.min.js.download"></script><script src="./PACTICS — Machine Documents-v7_files/jsQR.js.download"></script>
+</script><script src="./PACTICS — Machine Documents-v8_files/supabase.min.js.download"></script><script src="./PACTICS — Machine Documents-v8_files/qrcode.min.js.download"></script><script src="./PACTICS — Machine Documents-v8_files/xlsx.full.min.js.download"></script><script src="./PACTICS — Machine Documents-v8_files/html5-qrcode.min.js.download"></script><script src="./PACTICS — Machine Documents-v8_files/jsQR.js.download"></script>
 <style>
   :root{
     --primary:#0C5283; --dark:#08385A; --ok:#1F7A6B; --amber:#C46A1B; --err:#C0392B;
     --line:#E2EAF1; --grey:#5C6B7A; --faint:#9AAAB8; --card:#fff; --bg:#F4F7FA;
+    --text:#13212E;            /* main body text */
+    --on-primary:#fff;         /* text on primary-coloured buttons */
+    --header-bg:#08385A;       /* header / scan-head / toast background */
+    --nav-bg:#fff;             /* tab bar */
+    --input-bg:#fff;           /* inputs, selects, textareas */
+    --tint:#E7F0F7;            /* selected check / chip tint */
+    --tint2:#EEF3F7;           /* small badge tint */
+    --ok-tint:#E4F1EE;         /* success info box */
+    --hover:#F7FAFC;           /* row hover */
+    --danger-line:#F0C9C5;     /* danger button border */
     --radius:12px; --shadow:0 1px 3px rgba(8,56,90,.08),0 1px 2px rgba(8,56,90,.04);
   }
+  /* ---------- DARK THEME ---------- */
+  html[data-theme="dark"]{
+    --primary:#5AA9DE; --dark:#DCE7F0; --ok:#4FBBA5; --amber:#E39B4F; --err:#EE7A6D;
+    --line:#2B3B4C; --grey:#9FB0BF; --faint:#6E8090; --card:#16212C; --bg:#0E171F;
+    --text:#E6EDF3;
+    --on-primary:#07202D;      /* dark text on the lighter blue */
+    --header-bg:#0B1620;
+    --nav-bg:#16212C;
+    --input-bg:#1B2733;
+    --tint:#1C3448;
+    --tint2:#1B2A38;
+    --ok-tint:#16332D;
+    --hover:#1C2733;
+    --danger-line:#5E3131;
+    --shadow:0 1px 3px rgba(0,0,0,.45),0 1px 2px rgba(0,0,0,.3);
+  }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;background:var(--bg);color:#13212E;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.45}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.45}
   h1,h2,h3{margin:0;color:var(--dark)}
   button{font-family:inherit;cursor:pointer}
-  input,select,textarea{font-family:inherit;font-size:15px}
+  input,select,textarea{font-family:inherit;font-size:15px;background:var(--input-bg);color:var(--text)}
+  .field input,.field textarea,.field select{background:var(--input-bg);color:var(--text)}
+  ::placeholder{color:var(--faint)}
   .hidden{display:none !important}
 
-  header{background:var(--dark);color:#fff;padding:12px 16px;position:sticky;top:0;z-index:30}
+  header{background:var(--header-bg);color:#fff;padding:12px 16px;position:sticky;top:0;z-index:30}
   .head-row{display:flex;align-items:center;gap:12px;max-width:1000px;margin:0 auto}
   .brand{font-weight:800;font-size:16px;line-height:1.1}
   .brand small{display:block;font-weight:400;font-size:11px;opacity:.85}
@@ -76,6 +104,8 @@
   .whoami{font-size:12px;opacity:.9;cursor:pointer;text-decoration:underline}
   .lang-btn{margin-left:12px;background:rgba(255,255,255,.16);color:#fff;border:none;border-radius:14px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer}
   .lang-btn:hover{background:rgba(255,255,255,.28)}
+  .theme-btn{margin-left:8px;background:rgba(255,255,255,.16);color:#fff;border:none;border-radius:14px;padding:5px 10px;font-size:13px;line-height:1.4;cursor:pointer}
+  .theme-btn:hover{background:rgba(255,255,255,.28)}
   .scan-btn{margin-left:8px;background:#1F7A6B;color:#fff;border:none;border-radius:14px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
   .scan-btn:hover{background:#186354}
   .scan-ic{font-size:14px;line-height:1}
@@ -83,8 +113,8 @@
   .btn-scan:hover{background:#186354}
   .scan-overlay{position:fixed;inset:0;background:rgba(6,29,73,.92);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
   .scan-overlay.open{display:flex}
-  .scan-box{background:#fff;border-radius:16px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
-  .scan-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--dark);color:#fff}
+  .scan-box{background:var(--card);border-radius:16px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+  .scan-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--header-bg);color:#fff}
   .scan-head h3{margin:0;font-size:16px}
   .scan-head .x{background:none;border:none;color:#fff;font-size:26px;cursor:pointer;line-height:1}
   .scan-hint{padding:12px 16px 4px;color:var(--grey);font-size:13px;text-align:center}
@@ -109,15 +139,15 @@
   :lang(km), [lang="km"]{font-family:'Noto Sans Khmer','Khmer OS','Battambang',-apple-system,sans-serif}
   main{max-width:1000px;margin:0 auto;padding:16px}
 
-  .search-bar input{width:100%;padding:14px;border:1px solid var(--line);border-radius:10px;background:#fff}
-  .topnav{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:49px;z-index:20}
+  .search-bar input{width:100%;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--input-bg);color:var(--text)}
+  .topnav{background:var(--nav-bg);border-bottom:1px solid var(--line);position:sticky;top:49px;z-index:20}
   .topnav-inner{max-width:1000px;margin:0 auto;display:flex}
   .topnav button{flex:0 0 auto;padding:13px 22px;background:none;border:none;border-bottom:3px solid transparent;color:var(--grey);font-weight:600;font-size:14px;cursor:pointer}
   .topnav button.active{color:var(--primary);border-bottom-color:var(--primary)}
   .list-top{display:flex;gap:10px;align-items:stretch;margin-bottom:4px}
   .list-top .btn{white-space:nowrap}
   .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:6px}
-  .stat{background:#fff;border-radius:10px;box-shadow:var(--shadow);padding:14px}
+  .stat{background:var(--card);border-radius:10px;box-shadow:var(--shadow);padding:14px}
   .stat .n{font-size:24px;font-weight:800;color:var(--dark)}
   .stat .n.warn{color:var(--amber)} .stat .n.err{color:var(--err)}
   .stat .l{font-size:12px;color:var(--grey);text-transform:uppercase;letter-spacing:.03em;margin-top:2px}
@@ -128,17 +158,18 @@
   .qr-picklist{max-height:280px;overflow:auto;border:1px solid var(--line);border-radius:8px}
   .qr-pick{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid #EEF2F6;cursor:pointer}
   .qr-pick:last-child{border-bottom:none}
-  .qr-pick:hover{background:#F7FAFC}
+  .qr-pick:hover{background:var(--hover)}
   .qr-pick input{width:17px;height:17px;flex:0 0 auto}
   .qr-pick .c{font-weight:700;color:var(--dark);min-width:78px}
   .qr-pick .m{color:var(--grey);font-size:13px}
   .qr-sheet-area{margin-top:14px}
   .qr-labels{display:grid;grid-template-columns:repeat(2, 3cm);gap:6px;justify-content:center}
-  .qr-label{width:3cm;height:2cm;border:1px solid #ccc;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;box-sizing:border-box;page-break-inside:avoid;break-inside:avoid}
+  .qr-label{background:#fff;width:3cm;height:2cm;border:1px solid #ccc;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;box-sizing:border-box;page-break-inside:avoid;break-inside:avoid}
   .qr-label .qim{width:1.35cm;height:1.35cm;display:flex;align-items:center;justify-content:center}
   .qr-label .qim canvas,.qr-label .qim img{width:100%!important;height:100%!important}
   .qr-label .qc{font-size:9pt;font-weight:800;color:#08385A;margin-top:1px;line-height:1}
   @media print {
+    html[data-theme="dark"]{--card:#fff;--bg:#fff;--text:#13212E;--line:#E2EAF1;--grey:#5C6B7A;--nav-bg:#fff;--input-bg:#fff;}
     header, .topnav, .no-print { display:none !important; }
     body, html { background:#fff; }
     main { padding:0; max-width:none; }
@@ -148,7 +179,7 @@
     @page { margin:8mm; }
   }
   .count-line{color:var(--grey);font-size:13px;margin:10px 2px}
-  .m-row{background:#fff;border-radius:10px;box-shadow:var(--shadow);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:box-shadow .12s}
+  .m-row{background:var(--card);border-radius:10px;box-shadow:var(--shadow);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:box-shadow .12s}
   .m-row:hover{box-shadow:0 0 0 2px rgba(12,82,131,.15)}
   .m-row .code{font-weight:800;color:var(--dark);min-width:84px}
   .m-row .info{flex:1;min-width:0}
@@ -156,25 +187,42 @@
   .m-row .info .m{color:var(--grey);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .m-row .chev{color:var(--faint)}
   .doc-badges{display:flex;gap:5px}
-  .doc-badge{font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;background:#EEF3F7;color:var(--primary)}
+  .doc-badge{font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--tint2);color:var(--primary)}
 
   .btn{padding:11px 16px;border:none;border-radius:9px;font-weight:700;font-size:14px}
-  .btn-primary{background:var(--primary);color:#fff}
-  .btn-secondary{background:#fff;color:var(--dark);border:1px solid var(--line)}
+  .btn-primary{background:var(--primary);color:var(--on-primary)}
+  .btn-secondary{background:var(--card);color:var(--dark);border:1px solid var(--line)}
   .btn-sm{padding:7px 12px;font-size:13px}
-  .btn-danger{background:#fff;color:var(--err);border:1px solid #F0C9C5}
+  .btn-danger{background:var(--card);color:var(--err);border:1px solid var(--danger-line)}
   .actions{display:flex;gap:10px;flex-wrap:wrap}
 
   /* machine detail */
   .back{display:inline-flex;align-items:center;gap:6px;color:var(--primary);font-weight:600;font-size:14px;cursor:pointer;margin-bottom:12px}
-  .passport{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .passport{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
   .passport .pcode{font-size:24px;font-weight:800;color:var(--dark)}
   .passport .pmeta{color:var(--grey);font-size:13px;margin-top:4px}
+  /* ---- machine photo ---- */
+  .mphoto-wrap{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .mphoto{width:132px;height:132px;border-radius:10px;border:1px solid var(--line);background:var(--tint2);
+          overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative}
+  .mphoto img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
+  .mphoto .ph{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--faint);font-size:11px;text-align:center;padding:6px}
+  .mphoto .ph svg{width:38px;height:38px;opacity:.75}
+  .mphoto-tag{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);color:#fff;
+             font-size:10px;text-align:center;padding:3px 4px;letter-spacing:.02em;pointer-events:none}
+  .mphoto.busy::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.35)}
+  .mphoto-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:132px}
+  .mphoto-btns .btn{padding:5px 10px;font-size:11px}
+  .img-viewer{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:120;display:none;align-items:center;justify-content:center;padding:20px}
+  .img-viewer.open{display:flex}
+  .img-viewer img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+  .img-viewer .x{position:absolute;top:14px;right:18px;background:rgba(255,255,255,.15);color:#fff;border:none;
+                 border-radius:50%;width:40px;height:40px;font-size:24px;cursor:pointer}
   .qr-wrap{text-align:center}
-  .qr-wrap .qrbox{display:inline-block;padding:10px;background:#fff;border:1px solid var(--line);border-radius:10px}
+  .qr-wrap .qrbox{display:inline-block;padding:10px;background:#fff;/* keep white: QR must stay scannable */border:1px solid var(--line);border-radius:10px}
   .qr-wrap .lbl{font-weight:800;color:var(--dark);margin-top:6px}
 
-  .doc-section{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+  .doc-section{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
   .doc-section .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
   .doc-section .sec-head h2{font-size:17px}
   table.doc{width:100%;border-collapse:collapse}
@@ -191,7 +239,7 @@
 
   .backdrop{position:fixed;inset:0;background:rgba(8,30,50,.45);display:none;align-items:flex-end;justify-content:center;z-index:50}
   .backdrop.open{display:flex}
-  .sheet{background:#fff;width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:16px 16px 0 0;padding:18px}
+  .sheet{background:var(--card);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:16px 16px 0 0;padding:18px}
   @media (min-width:600px){.backdrop{align-items:center}.sheet{border-radius:16px}}
   .sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
   .sheet-head .x{background:none;border:none;font-size:26px;color:var(--grey)}
@@ -201,17 +249,21 @@
   .field.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .check-item{display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:14px;color:var(--grey);cursor:pointer;user-select:none}
-  .check-item.on{border-color:var(--primary);background:#E7F0F7;color:var(--primary);font-weight:600}
-  .check-item .box{width:16px;height:16px;border:1.5px solid var(--faint);border-radius:4px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+  .check-item.on{border-color:var(--primary);background:var(--tint);color:var(--primary);font-weight:600}
+  .check-item .box{width:16px;height:16px;border:1.5px solid var(--faint);border-radius:4px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--on-primary)}
   .check-item.on .box{background:var(--primary);border-color:var(--primary)}
-  .check-chip{display:inline-block;font-size:11px;font-weight:600;background:#E7F0F7;color:var(--primary);padding:2px 8px;border-radius:10px;margin:2px 3px 2px 0}
+  .check-chip{display:inline-block;font-size:11px;font-weight:600;background:var(--tint);color:var(--primary);padding:2px 8px;border-radius:10px;margin:2px 3px 2px 0}
 
-  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--dark);color:#fff;padding:12px 18px;border-radius:24px;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transition:.25s;z-index:80}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--header-bg);color:#fff;padding:12px 18px;border-radius:24px;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transition:.25s;z-index:80}
   .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
   .toast.err{background:var(--err)} .toast.ok{background:var(--ok)}
-  .setup-warn{max-width:560px;margin:60px auto;padding:24px;background:#fff;border-radius:12px}
+  .setup-warn{max-width:560px;margin:60px auto;padding:24px;background:var(--card);border-radius:12px}
 </style>
-<script src="./PACTICS — Machine Documents-v7_files/supabase.min(1).js.download"></script></head>
+<script>
+  // Apply the saved theme immediately so the page never flashes light before loading.
+  try { document.documentElement.setAttribute("data-theme", localStorage.getItem("docs_theme") || "light"); } catch(e){}
+</script>
+<script src="./PACTICS — Machine Documents-v8_files/supabase.min(1).js.download"></script></head>
 <body>
 
 <div id="app">
@@ -222,6 +274,7 @@
       <button id="scan-btn" class="scan-btn" title="Scan" style=""><span class="scan-ic">▣</span> <span data-i18n="scan">ស្កេន</span></button>
       <span class="whoami" id="whoami">កំណត់​ឈ្មោះ​អ្នក</span>
       <button id="lang-btn" class="lang-btn" title="Language">EN</button>
+      <button id="theme-btn" class="theme-btn" title="ផ្ទាំង​ភ្លឺ" aria-label="ផ្ទាំង​ភ្លឺ">☀️</button>
     </div>
   </header>
   <nav class="topnav" id="topnav">
@@ -2264,6 +2317,11 @@
   </div>
 </div>
 
+<div class="img-viewer" id="img-viewer">
+  <button class="x" id="img-viewer-close">×</button>
+  <img id="img-viewer-img" alt="">
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -2324,6 +2382,12 @@ const I18N = {
     chk_clean: "Clean", chk_oil_change: "Oil change",
     chk_clean_oil: "Clean / oil change", chk_spare_parts: "Spare parts", chk_air: "Air system",
     line_select: "— select line —",
+    theme_dark: "Dark mode", theme_light: "Light mode",
+    photo_add: "Add photo", photo_change: "Change photo", photo_remove: "Remove",
+    photo_none: "No photo", photo_uploading: "Uploading…", photo_saved: "Photo saved",
+    photo_model: "Model photo",
+    photo_removed: "Photo removed", photo_remove_ask: "Remove this machine photo?",
+    photo_bad_type: "Please choose a PNG, JPG or WEBP image", photo_too_big: "Image too large (max 25 MB)",
     chk_electrical: "Electrical system", chk_presser: "Presser foot / feed dog", chk_guards: "Safety guards",
     // name sheet
     your_name: "Your name", name_hint: "So edits show who made them", ph_name: "e.g. Hoeurn",
@@ -2399,6 +2463,12 @@ const I18N = {
     chk_clean: "សម្អាត", chk_oil_change: "ប្តូរ​ប្រេង",
     chk_clean_oil: "សម្អាត / ប្តូរ​ប្រេង", chk_spare_parts: "គ្រឿង​បន្លាស់", chk_air: "ប្រព័ន្ធ​ខ្យល់",
     line_select: "— ជ្រើស​ខ្សែ —",
+    theme_dark: "ផ្ទាំង​ងងឹត", theme_light: "ផ្ទាំង​ភ្លឺ",
+    photo_add: "បន្ថែម​រូប", photo_change: "ប្តូរ​រូប", photo_remove: "លុប​រូប",
+    photo_none: "គ្មាន​រូប", photo_uploading: "កំពុង​ផ្ទុក…", photo_saved: "បាន​រក្សាទុក​រូប",
+    photo_model: "រូប​ម៉ូដែល",
+    photo_removed: "បាន​លុប​រូប", photo_remove_ask: "លុប​រូប​ម៉ាស៊ីន​នេះ?",
+    photo_bad_type: "សូម​ជ្រើស​រូប PNG, JPG ឬ WEBP", photo_too_big: "រូប​ធំ​ពេក (អតិបរមា ២៥ MB)",
     chk_electrical: "ប្រព័ន្ធ​អគ្គិសនី", chk_presser: "ជើង​សង្កត់ / ធ្មេញ​រុញ", chk_guards: "ការពារ​សុវត្ថិភាព",
     your_name: "ឈ្មោះ​អ្នក", name_hint: "ដើម្បី​បង្ហាញ​អ្នក​ដែល​បាន​កែ", ph_name: "ឧ. ហឿន",
     upload_cat: "ផ្ទុក​កាតាឡុក / សៀវភៅ​ណែនាំ", title: "ចំណងជើង", ph_title: "ឧ. កាតាឡុក​គ្រឿង​បន្លាស់",
@@ -2436,15 +2506,37 @@ function applyLang(){
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.setAttribute('placeholder', TX(el.getAttribute('data-i18n-ph'))); });
   // language button label
   const lb = $('lang-btn'); if (lb) lb.textContent = LANG==='en' ? 'ខ្មែរ' : 'EN';
+  try { if (typeof applyTheme==='function') applyTheme(); } catch(e){}
   document.documentElement.setAttribute('lang', LANG);
   // refresh dynamic views if present
   try { if (typeof refreshWho==='function') refreshWho(); } catch(e){}
-  try { if (CURRENT) loadDocs(CURRENT.code); } catch(e){}
+  try { if (CURRENT) { renderPhoto(CURRENT); loadDocs(CURRENT.code); } } catch(e){}
   try { if (!$('view-list').classList.contains('hidden')) renderList(); } catch(e){}
   try { if (!$('view-dashboard').classList.contains('hidden')) renderDashboard(); } catch(e){}
   try { if (!$('view-qrprint').classList.contains('hidden')) { renderQrPicklist(); updateQrCount(); } } catch(e){}
 }
 function toggleLang(){ LANG = LANG==='en' ? 'km' : 'en'; localStorage.setItem('docs_lang', LANG); applyLang(); }
+
+// ================= THEME (light / dark) =================
+let THEME = localStorage.getItem('docs_theme') || 'light';
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', THEME);
+  const b = $('theme-btn');
+  if (b){
+    // show the action the button will perform
+    b.textContent = THEME === 'dark' ? '☀️' : '🌙';
+    b.title = THEME === 'dark' ? TX('theme_light') : TX('theme_dark');
+    b.setAttribute('aria-label', b.title);
+  }
+  // keep the mobile browser chrome in step with the theme
+  const mt = document.querySelector('meta[name="theme-color"]');
+  if (mt) mt.setAttribute('content', THEME === 'dark' ? '#0B1620' : '#08385A');
+}
+function toggleTheme(){
+  THEME = THEME === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('docs_theme', THEME);
+  applyTheme();
+}
 
 // ================= QR SCANNER (in-app camera) =================
 let qrScanner = null, scanRunning = false;
@@ -2750,6 +2842,10 @@ function toast(m,t){ const e=$('toast'); e.textContent=m; e.className='toast sho
 // ---- name ----
 function refreshWho(){ $('whoami').textContent = WHO ? (TX('you')+': '+WHO) : TX('setName'); }
 $('lang-btn').onclick = toggleLang;
+$('theme-btn').onclick = toggleTheme;
+$('img-viewer-close').onclick = ()=>$('img-viewer').classList.remove('open');
+$('img-viewer').onclick = e => { if (e.target.id==='img-viewer') $('img-viewer').classList.remove('open'); };
+applyTheme();
 applyLang();
 refreshWho();
 $('whoami').onclick = openName;
@@ -2801,6 +2897,14 @@ async function openMachine(code){
   window.scrollTo(0,0);
   // passport
   $('passport').innerHTML = `
+    <div class="mphoto-wrap">
+      <div class="mphoto" id="mphoto"></div>
+      <div class="mphoto-btns">
+        <button class="btn btn-secondary btn-sm" id="photo-btn"></button>
+        <button class="btn btn-danger btn-sm" id="photo-del" style="display:none" data-i18n="photo_remove">Remove</button>
+      </div>
+      <input type="file" id="photo-file" accept="image/png,image/jpeg,image/jpg,image/webp" style="display:none">
+    </div>
     <div style="flex:1;min-width:200px">
       <div class="pcode">${esc(m.code)}</div>
       <div class="pmeta">${esc(m.machine_type||'')}${m.brand?' · '+esc(m.brand):''}${m.model?' · '+esc(m.model):''}</div>
@@ -2810,6 +2914,10 @@ async function openMachine(code){
       <button class="btn btn-secondary btn-sm" id="print-qr" style="margin-top:8px">Print QR label</button>
       <div style="font-size:11px;color:var(--faint);margin-top:4px;max-width:150px">Scan with a phone camera to open this machine</div>
     </div>`;
+  renderPhoto(m);
+  $('photo-btn').onclick = ()=>$('photo-file').click();
+  $('photo-file').onchange = e => uploadPhoto(e.target.files[0]);
+  $('photo-del').onclick = removePhoto;
   try{ new QRCode($('qr'), { text: qrLink(m.code), width:110, height:110, correctLevel:QRCode.CorrectLevel.M }); }catch(e){}
   $('print-qr').onclick = ()=>printQR(m);
   await loadDocs(code);
@@ -2859,6 +2967,148 @@ function docPublicUrl(path){
   // public bucket URL
   return `${SUPABASE_URL}/storage/v1/object/public/${path}`;
 }
+
+// ================= MACHINE PHOTO =================
+const PHOTO_TYPES = ['image/png','image/jpeg','image/jpg','image/webp'];
+
+// ---- Model reference pictures already in storage: catalogs/machine-refs/<file>.png ----
+// Most models match their file name once punctuation is stripped (A5E -> a5e).
+// These aliases cover the models whose file is named differently.
+const MODEL_REF_ALIAS = {
+  gc6890md4:'gc6890',   jkt1900gskd:'t1900gsk', bn246d:'246d',
+  c5:'overlockc5',      c6:'overlockc6',        l2290asr7p:'l2290',
+  lk1900bss:'lk1900b',  jkt190gk1d:'t190gk',    lbh1790ss:'lbh1790',
+  gk32500:'gsk32500',   gk325001356:'gsk32500', w3662p01g:'w3600p',
+  vc008:'vc800',        spvc008:'vc800',        cw246:'dsc246'
+};
+// Same model name, different machine depending on brand
+const MODEL_REF_BY_BRAND = { 'g3020|bona':'bona3020', 'g3020|ywk':'gr3020' };
+function normKey(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+function modelRefUrl(m){
+  if (!m || !m.model) return null;
+  const model = normKey(m.model), brand = normKey(m.brand);
+  if (!model) return null;
+  const file = MODEL_REF_BY_BRAND[model+'|'+brand] || MODEL_REF_ALIAS[model] || model;
+  return docPublicUrl(`catalogs/machine-refs/${file}.png`);
+}
+
+function renderPhoto(m){
+  const box = $('mphoto'); if (!box) return;
+  const btn = $('photo-btn'), del = $('photo-del');
+  // Show, in order: the machine's own photo -> its model reference picture -> placeholder.
+  const own = m && m.image_path ? docPublicUrl(m.image_path) : null;
+  const ref = modelRefUrl(m);
+  const showPlaceholder = ()=>{
+    box.innerHTML = photoPlaceholder();
+    btn.textContent = TX('photo_add');
+    del.style.display = 'none';
+  };
+  const showImg = (url, isRef)=>{
+    box.innerHTML = '';
+    const im = document.createElement('img');
+    im.id = 'mphoto-img';
+    im.alt = m.code || '';
+    im.src = url;
+    im.onerror = ()=>{ if (isRef) showPlaceholder(); else if (ref) showImg(ref, true); else showPlaceholder(); };
+    im.onclick = ()=>openImgViewer(im.src);
+    box.appendChild(im);
+    if (isRef){
+      const tag = document.createElement('span');
+      tag.className = 'mphoto-tag';
+      tag.textContent = TX('photo_model');
+      box.appendChild(tag);
+    }
+    btn.textContent = isRef ? TX('photo_add') : TX('photo_change');
+    del.style.display = (m && m.image_path) ? '' : 'none';
+  };
+  if (own) showImg(own, false);
+  else if (ref) showImg(ref, true);
+  else showPlaceholder();
+}
+function photoPlaceholder(){
+  return `<div class="ph">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.6"/><path d="M21 15l-5-5L5 19"/>
+    </svg>
+    <span>${TX('photo_none')}</span></div>`;
+}
+// Shrink a phone photo before upload: keeps storage small and renders cleanly.
+async function compressImage(file, maxSide=1200, quality=0.82){
+  let src = null, w = 0, h = 0;
+  if (window.createImageBitmap){
+    // 'from-image' respects EXIF, so portrait phone photos aren't rotated
+    try { src = await createImageBitmap(file, { imageOrientation:'from-image' }); w=src.width; h=src.height; } catch(e){ src=null; }
+  }
+  if (!src){
+    const dataUrl = await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); });
+    src = await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=dataUrl; });
+    w = src.naturalWidth || src.width; h = src.naturalHeight || src.height;
+  }
+  if (!w || !h) return file;
+  if (Math.max(w,h) > maxSide){ const s = maxSide/Math.max(w,h); w = Math.round(w*s); h = Math.round(h*s); }
+  const c = document.createElement('canvas'); c.width=w; c.height=h;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h);          // flatten transparent PNGs onto white
+  ctx.drawImage(src, 0, 0, w, h);
+  const blob = await new Promise(res => c.toBlob(res, 'image/jpeg', quality));
+  if (src.close) { try { src.close(); } catch(e){} }
+  if (!blob) return file;
+  // Re-encoding can enlarge an already-small or flat image — keep whichever is smaller.
+  return blob.size < file.size ? blob : file;
+}
+async function uploadPhoto(file){
+  if (!file || !CURRENT) return;
+  $('photo-file').value = '';
+  if (!PHOTO_TYPES.includes((file.type||'').toLowerCase())){ toast(TX('photo_bad_type'),'err'); return; }
+  if (file.size > 25*1024*1024){ toast(TX('photo_too_big'),'err'); return; }
+  const box = $('mphoto'), btn = $('photo-btn');
+  box.classList.add('busy'); btn.disabled = true; btn.textContent = TX('photo_uploading');
+  try {
+    const blob = await compressImage(file);
+    const mime = blob.type || file.type || 'image/jpeg';
+    const ext  = mime.includes('png') ? 'png' : mime.includes('webp') ? 'webp' : 'jpg';
+    const oldPath = CURRENT.image_path || null;
+    const path = `machine-photos/${CURRENT.code}/${Date.now()}.${ext}`.replace(/\s+/g,'_');
+    const up = await sb.storage.from('catalogs').upload(path, blob, { upsert:true, contentType:mime });
+    if (up.error) throw new Error(up.error.message);
+    const storedPath = 'catalogs/' + up.data.path;
+    const res = await sb.from('machines').update({ image_path: storedPath }).eq('code', CURRENT.code);
+    if (res.error) throw new Error(res.error.message);
+    // keep local state in step so the card updates immediately
+    CURRENT.image_path = storedPath;
+    const mi = MACHINES.findIndex(x=>x.code===CURRENT.code);
+    if (mi >= 0) MACHINES[mi].image_path = storedPath;
+    // tidy up the previous photo so storage doesn't fill with old versions
+    if (oldPath && oldPath !== storedPath){
+      try { await sb.storage.from('catalogs').remove([oldPath.replace(/^catalogs\//,'')]); } catch(e){}
+    }
+    renderPhoto(CURRENT);
+    toast(TX('photo_saved'),'ok');
+  } catch(err){
+    toast('Photo failed: '+(err.message||err),'err');
+    renderPhoto(CURRENT);
+  } finally {
+    box.classList.remove('busy'); btn.disabled = false;
+  }
+}
+async function removePhoto(){
+  if (!CURRENT || !CURRENT.image_path) return;
+  if (!confirm(TX('photo_remove_ask'))) return;
+  const old = CURRENT.image_path;
+  const res = await sb.from('machines').update({ image_path: null }).eq('code', CURRENT.code);
+  if (res.error){ toast('Remove failed: '+res.error.message,'err'); return; }
+  try { await sb.storage.from('catalogs').remove([old.replace(/^catalogs\//,'')]); } catch(e){}
+  CURRENT.image_path = null;
+  const mi = MACHINES.findIndex(x=>x.code===CURRENT.code);
+  if (mi >= 0) MACHINES[mi].image_path = null;
+  renderPhoto(CURRENT);
+  toast(TX('photo_removed'),'ok');
+}
+function openImgViewer(url){
+  const v = $('img-viewer');
+  $('img-viewer-img').src = url;
+  v.classList.add('open');
+}
 function fileIcon(mime, name){
   const n = (name||'').toLowerCase();
   if ((mime||'').includes('pdf') || n.endsWith('.pdf')) return '📄';
@@ -2876,7 +3126,7 @@ function renderDocs(){
   const rowHtml = (d, isModel) => {
     const url = docPublicUrl(d.file_path);
     const scopeTag = isModel
-      ? `<span class="doc-badge" style="background:#E4F1EE;color:var(--ok)">model ${esc(d.model||'')}</span>`
+      ? `<span class="doc-badge" style="background:var(--ok-tint);color:var(--ok)">model ${esc(d.model||'')}</span>`
       : `<span class="doc-badge">this machine</span>`;
     return `<tr>
       <td><a href="${esc(url)}" target="_blank" rel="noopener" style="font-weight:600;color:var(--primary);text-decoration:none">${fileIcon(d.mime,d.file_name)} ${esc(d.title)}</a>
