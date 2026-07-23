@@ -10,11 +10,12 @@
 // A manual upload or dropped URL overrides everything and is saved to Supabase.
 import { store } from '../store.js';
 import { sb } from '../supabaseClient.js';
-import { SUPABASE_URL, TABLES } from '../config.js';
-import { TX } from '../i18n/index.js';
-import { esc } from '../utils/format.js';
+import { SUPABASE_URL, TABLES, CHECK_ITEMS, LINE_OPTIONS } from '../config.js';
+import { TX, CHECK_LABEL } from '../i18n/index.js';
+import { esc, stamp } from '../utils/format.js';
 import { toast } from '../utils/toast.js';
 import { $ } from '../utils/dom.js';
+import { loadMachineTasks, saveTask, deleteTask } from '../data/maintenance.js';
 
 const PHOTO_BUCKET = 'catalogs';
 const MAX_PHOTO_BYTES = 25 * 1024 * 1024;
@@ -86,7 +87,11 @@ export function openMachine(code) {
     </div>
     <div class="doc-section"><div class="sec-head"><h2>${TX('catalog_manuals')}</h2></div><div id="docs-body"></div></div>
     <div class="doc-section"><div class="sec-head"><h2>${TX('spare_parts')}</h2></div><div id="parts-body"></div></div>
-    <div class="doc-section"><div class="sec-head"><h2>${TX('maint_schedule')}</h2></div><div id="maint-body"></div></div>`;
+    <div class="doc-section"><div class="sec-head">
+        <h2>${TX('maint_schedule')}</h2>
+        <button class="btn btn-primary btn-sm" id="add-task">${TX('add_record')}</button>
+      </div><div id="maint-body"></div></div>
+    ${taskSheetMarkup()}`;
 
   try { new window.QRCode($('qr'), { text: qrLink(m.code), width: 110, height: 110, correctLevel: window.QRCode.CorrectLevel.M }); } catch (e) {}
 
@@ -95,6 +100,8 @@ export function openMachine(code) {
 
   wirePhotoCell();
   if (!m.image_url) autoResolveImage(m);
+  wireTaskSheet();
+  loadTasks(m.code);
 }
 
 /* ---------- interactions: click-to-upload + drag/drop (file OR url) ---------- */
@@ -221,4 +228,160 @@ async function persistImageUrl(url) {
   store.set({ current: m });
   toast(TX('photo_updated'), 'ok');
   openMachine(m.code);
+}
+
+/* ==================== maintenance schedule (per-machine) ==================== */
+// Ported from the single-file app's openTask/renderTasks/t-save/delTask, with
+// the three fixes preserved:
+//  1) Date done defaults to today on new records.
+//  2) Line is a dropdown (LINE_OPTIONS) instead of free text, but keeps any
+//     legacy free-text value already stored on a record.
+//  3) 'clean' and 'oil_change' are separate checklist items; normalizeChecks()
+//     expands an older combined 'clean_oil' record into both on edit.
+
+let TASKS = [];
+let taskChecks = new Set();
+let editingTaskId = null;
+
+async function loadTasks(code) {
+  $('maint-body').innerHTML = `<div class="empty">Loading…</div>`;
+  TASKS = await loadMachineTasks(code);
+  renderTasks();
+}
+
+function renderTasks() {
+  const b = $('maint-body');
+  if (!b) return; // navigated away before the load resolved
+  if (!TASKS.length) { b.innerHTML = `<div class="empty">${TX('no_records')}</div>`; return; }
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const rows = [...TASKS].sort((a, b) => {
+    const da = a.date_done || a.last_done || '', db = b.date_done || b.last_done || '';
+    return db.localeCompare(da);
+  });
+  b.innerHTML = `<table class="doc"><thead><tr>
+    <th>${TX('date_done')}</th><th>${TX('checks_done')}</th><th>${TX('next_due_opt')}</th><th></th></tr></thead><tbody>` +
+    rows.map(t => {
+      let dueClass = '', dueNote = '';
+      if (t.next_due) {
+        const d = new Date(t.next_due), days = Math.round((d - today) / 86400000);
+        if (days < 0) { dueClass = 'due-over'; dueNote = ' (overdue)'; }
+        else if (days <= 7) { dueClass = 'due-soon'; dueNote = ' (soon)'; }
+      }
+      const checks = Array.isArray(t.checks) ? t.checks : [];
+      const chips = checks.map(c => `<span class="check-chip">${esc(CHECK_LABEL(c) || c)}</span>`).join('') || '<span class="upd">—</span>';
+      const typeLabel = t.maint_type === 'weekly' ? TX('weekly_op') : TX('monthly_mech');
+      const meta = [t.mechanic ? (TX('col_by') + ' ' + esc(t.mechanic)) : '', t.line ? (TX('line') + ' ' + esc(t.line)) : '', typeLabel].filter(Boolean).join(' · ');
+      return `<tr>
+        <td><div style="font-weight:600">${t.date_done ? esc(t.date_done) : (t.task ? esc(t.task) : '—')}</div>${meta ? `<div class="upd">${meta}</div>` : ''}${t.notes ? `<div class="upd">${esc(t.notes)}</div>` : ''}</td>
+        <td>${chips}</td>
+        <td class="${dueClass}">${t.next_due ? esc(t.next_due) + dueNote : '—'}</td>
+        <td class="row-actions">
+          <button class="icon-btn" data-edit="${t.id}" title="Edit">✎</button>
+          <button class="icon-btn" data-del="${t.id}" title="Delete">🗑</button>
+        </td></tr>`;
+    }).join('') + `</tbody></table>`;
+  b.querySelectorAll('[data-edit]').forEach(x => x.onclick = () => openTask(+x.dataset.edit));
+  b.querySelectorAll('[data-del]').forEach(x => x.onclick = () => delTask(+x.dataset.del));
+}
+
+function taskSheetMarkup() {
+  return `<div class="backdrop" id="task-sheet"><div class="sheet">
+    <div class="sheet-head"><h3 id="task-title">${TX('add_maint')}</h3><button class="x" id="task-close">×</button></div>
+    <div class="field"><label>${TX('date_done')}</label><input id="t-date" type="date"></div>
+    <div class="field two">
+      <div><label>${TX('type')}</label><select id="t-type" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px">
+        <option value="monthly">${TX('monthly_mech')}</option>
+        <option value="weekly">${TX('weekly_op')}</option>
+      </select></div>
+      <div><label>${TX('line')}</label><select id="t-line" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px"></select></div>
+    </div>
+    <div class="field"><label>${TX('mechanic')}</label><input id="t-mech" placeholder="${TX('ph_mech')}"></div>
+    <div class="field"><label>${TX('checks_done')}</label><div id="t-checks" class="check-grid"></div></div>
+    <div class="field"><label>${TX('remarks')}</label><textarea id="t-notes" rows="2"></textarea></div>
+    <div class="field"><label>${TX('next_due_opt')}</label><input id="t-next" type="date"></div>
+    <div class="actions"><button class="btn btn-primary" id="t-save">${TX('save_record')}</button></div>
+  </div></div>`;
+}
+
+// Older records stored the combined 'clean_oil'. When one is opened for
+// editing, expand it into the two new items so nothing is lost on save.
+function normalizeChecks(arr) {
+  const out = new Set();
+  (Array.isArray(arr) ? arr : []).forEach(c => {
+    if (c === 'clean_oil') { out.add('clean'); out.add('oil_change'); }
+    else out.add(c);
+  });
+  return out;
+}
+
+function buildCheckGrid() {
+  const g = $('t-checks'); if (!g) return;
+  g.innerHTML = CHECK_ITEMS.map(({ id, key }) =>
+    `<div class="check-item${taskChecks.has(id) ? ' on' : ''}" data-check="${id}"><span class="box">${taskChecks.has(id) ? '✓' : ''}</span>${esc(TX(key))}</div>`
+  ).join('');
+  g.querySelectorAll('[data-check]').forEach(el => el.onclick = () => {
+    const id = el.dataset.check;
+    if (taskChecks.has(id)) taskChecks.delete(id); else taskChecks.add(id);
+    buildCheckGrid();
+  });
+}
+
+// Build the Line dropdown. Keeps any legacy free-text value so editing never loses data.
+function buildLineSelect(current) {
+  const sel = $('t-line'); if (!sel) return;
+  const opts = LINE_OPTIONS.slice();
+  if (current && !opts.includes(current)) opts.unshift(current);
+  sel.innerHTML = `<option value="">${TX('line_select')}</option>` +
+    opts.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  sel.value = current || '';
+}
+
+function openTask(id) {
+  editingTaskId = id;
+  const t = id ? TASKS.find(x => x.id === id) : null;
+  $('task-title').textContent = t ? TX('edit_maint') : TX('add_maint');
+  $('t-date').value = t ? (t.date_done || '') : stamp(); // new records default to today
+  $('t-type').value = t ? (t.maint_type || 'monthly') : 'monthly';
+  buildLineSelect(t ? (t.line || '') : '');
+  const who = store.get().who;
+  $('t-mech').value = t ? (t.mechanic || who || '') : (who || '');
+  $('t-notes').value = t ? (t.notes || '') : '';
+  $('t-next').value = t ? (t.next_due || '') : '';
+  taskChecks = normalizeChecks(t && t.checks);
+  buildCheckGrid();
+  $('task-sheet').classList.add('open');
+}
+
+function wireTaskSheet() {
+  const addBtn = $('add-task'); if (addBtn) addBtn.onclick = () => openTask(null);
+  const closeBtn = $('task-close'); if (closeBtn) closeBtn.onclick = () => $('task-sheet').classList.remove('open');
+  const saveBtn = $('t-save');
+  if (saveBtn) saveBtn.onclick = async () => {
+    const m = store.get().current; if (!m) return;
+    const date_done = $('t-date').value || null;
+    if (!date_done) { toast(TX('m_task_req'), 'err'); return; }
+    const rec = {
+      machine_code: m.code, date_done, maint_type: $('t-type').value, line: $('t-line').value || null,
+      mechanic: $('t-mech').value.trim() || null, checks: [...taskChecks],
+      next_due: $('t-next').value || null, notes: $('t-notes').value.trim() || null,
+      task: 'Maintenance', updated_at: new Date().toISOString(), updated_by: store.get().who || null,
+    };
+    saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
+    const res = await saveTask(editingTaskId, rec);
+    saveBtn.disabled = false; saveBtn.textContent = TX('save_record');
+    if (res.error) { toast('Save failed: ' + res.error.message, 'err'); return; }
+    $('task-sheet').classList.remove('open');
+    await loadTasks(m.code);
+    toast(TX('m_saved'), 'ok');
+  };
+}
+
+async function delTask(id) {
+  const m = store.get().current; if (!m) return;
+  const t = TASKS.find(x => x.id === id); if (!t) return;
+  if (!confirm('Delete this maintenance record?')) return;
+  const { error } = await deleteTask(id);
+  if (error) { toast('Delete failed: ' + error.message, 'err'); return; }
+  await loadTasks(m.code);
+  toast(TX('m_deleted'), 'ok');
 }

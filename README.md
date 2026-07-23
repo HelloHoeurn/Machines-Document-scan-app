@@ -72,6 +72,26 @@ Upload the project to Cloudflare Pages / GitHub Pages. Set the output/root so
 `public/index.html` is served (or move `public/` contents to the site root).
 No build command needed.
 
+## Live file / source of truth
+
+`index.html` (repo root) is the deployed entry point, served as static assets
+by Cloudflare (`wrangler.jsonc`, `assets.directory: "."`). It is the single
+source of truth for the legacy single-file app and holds the current logic
+for maintenance records, including:
+
+- **Date done** — defaults to today (`todayStr()`) on new records.
+- **Line** — dropdown (`LINE_OPTIONS` / `buildLineSelect()`) covering
+  LinePPA01–04 and Line01–23 (with Line03A/Line03B), while preserving any
+  legacy free-text value already stored on a record.
+- **Checks done** — `clean` and `oil_change` are separate checklist items;
+  `normalizeChecks()` expands any older combined `clean_oil` record into both
+  when it's opened for editing, so no history is lost.
+
+`Machine_Documents_app.html` (previously at repo root) was a stale, unused
+duplicate that had fallen behind `index.html` on all of the above — it has
+been removed. `Pubpilc/Machine_Documents_app.html` is a separate browser-saved
+snapshot, left as-is for now.
+
 ## What's done vs. to port
 
 - **Done & runnable against Supabase:** foundation (config, client, store, utils,

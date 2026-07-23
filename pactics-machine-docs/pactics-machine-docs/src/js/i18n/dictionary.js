@@ -50,9 +50,11 @@ export const I18N = {
     checks_done: "Checks done", remarks: "Remarks", next_due_opt: "Next due (optional)",
     save_record: "Save record",
     monthly_mech: "Monthly (mechanic)", weekly_op: "Weekly (operator)",
-    ph_line: "e.g. 15",
+    ph_line: "e.g. 15", line_select: "— select line —",
     // checks
-    chk_clean_oil: "Clean / oil change", chk_spare_parts: "Spare parts", chk_air: "Air system",
+    // NOTE: chk_clean_oil is the legacy combined item — kept so older records still display correctly.
+    chk_clean: "Clean", chk_oil_change: "Oil change", chk_clean_oil: "Clean / oil change",
+    chk_spare_parts: "Spare parts", chk_air: "Air system",
     chk_electrical: "Electrical system", chk_presser: "Presser foot / feed dog", chk_guards: "Safety guards",
     // name sheet
     your_name: "Your name", name_hint: "So edits show who made them", ph_name: "e.g. Hoeurn",
@@ -131,8 +133,9 @@ export const I18N = {
     checks_done: "ការ​ត្រួតពិនិត្យ​ដែល​បាន​ធ្វើ", remarks: "កំណត់​សម្គាល់", next_due_opt: "ដល់​កំណត់​បន្ទាប់ (ស្រេច​ចិត្ត)",
     save_record: "រក្សាទុក​កំណត់ត្រា",
     monthly_mech: "ប្រចាំ​ខែ (ជាង)", weekly_op: "ប្រចាំ​សប្តាហ៍ (អ្នក​ប្រើ)",
-    ph_line: "ឧ. 15",
-    chk_clean_oil: "សម្អាត / ប្តូរ​ប្រេង", chk_spare_parts: "គ្រឿង​បន្លាស់", chk_air: "ប្រព័ន្ធ​ខ្យល់",
+    ph_line: "ឧ. 15", line_select: "— ជ្រើស​ខ្សែ —",
+    chk_clean: "សម្អាត", chk_oil_change: "ប្តូរ​ប្រេង", chk_clean_oil: "សម្អាត / ប្តូរ​ប្រេង",
+    chk_spare_parts: "គ្រឿង​បន្លាស់", chk_air: "ប្រព័ន្ធ​ខ្យល់",
     chk_electrical: "ប្រព័ន្ធ​អគ្គិសនី", chk_presser: "ជើង​សង្កត់ / ធ្មេញ​រុញ", chk_guards: "ការពារ​សុវត្ថិភាព",
     your_name: "ឈ្មោះ​អ្នក", name_hint: "ដើម្បី​បង្ហាញ​អ្នក​ដែល​បាន​កែ", ph_name: "ឧ. ហឿន",
     upload_cat: "ផ្ទុក​កាតាឡុក / សៀវភៅ​ណែនាំ", title: "ចំណងជើង", ph_title: "ឧ. កាតាឡុក​គ្រឿង​បន្លាស់",
