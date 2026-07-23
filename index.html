@@ -23,12 +23,8 @@
     tryNext();
   }
   window.__libs = { supabase:false, qrcode:false, xlsx:false };
-  // Supabase (required)
-  loadFirst([
-    "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js",
-    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.7/supabase.min.js"
-  ], function(ok){ window.__libs.supabase=ok; window.dispatchEvent(new Event('lib-supabase')); });
+  // Supabase is loaded from a local vendored file (see the two <script> tags
+  // near the top of <head> / just before </head>) — no CDN needed for it.
   // QR code (needed for the QR labels)
   loadFirst([
     "https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js",
@@ -54,7 +50,7 @@
     "https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"
   ], function(ok){ window.__libs.jsqr=ok; window.dispatchEvent(new Event('lib-scanner')); });
 })();
-</script><script src="./PACTICS — Machine Documents-v8_files/supabase.min.js.download"></script><script src="./PACTICS — Machine Documents-v8_files/qrcode.min.js.download"></script><script src="./PACTICS — Machine Documents-v8_files/xlsx.full.min.js.download"></script><script src="./PACTICS — Machine Documents-v8_files/html5-qrcode.min.js.download"></script><script src="./PACTICS — Machine Documents-v8_files/jsQR.js.download"></script>
+</script><script src="./PACTICS — Machine Documents-v8_files/qrcode.min.js.download"></script><script src="./PACTICS — Machine Documents-v8_files/xlsx.full.min.js.download"></script><script src="./PACTICS — Machine Documents-v8_files/html5-qrcode.min.js.download"></script><script src="./PACTICS — Machine Documents-v8_files/jsQR.js.download"></script>
 <style>
   :root{
     --primary:#0C5283; --dark:#08385A; --ok:#1F7A6B; --amber:#C46A1B; --err:#C0392B;
@@ -263,7 +259,7 @@
   // Apply the saved theme immediately so the page never flashes light before loading.
   try { document.documentElement.setAttribute("data-theme", localStorage.getItem("docs_theme") || "light"); } catch(e){}
 </script>
-<script src="./PACTICS — Machine Documents-v8_files/supabase.min(1).js.download"></script></head>
+<script src="./PACTICS — Machine Documents-v8_files/supabase.min.js.download"></script></head>
 <body>
 
 <div id="app">
@@ -2827,7 +2823,7 @@ function whenSupabaseReady(cb){
   }, 12000);
 }
 function showLibError(){
-  document.body.innerHTML = '<div class="setup-warn"><h2>Could not load a required library</h2><p>The app needs internet access to load Supabase. Please check the connection and refresh. If this factory network blocks outside sites, ask IT to allow <b>unpkg.com</b>, <b>cdn.jsdelivr.net</b>, and <b>cdnjs.cloudflare.com</b>.</p></div>';
+  document.body.innerHTML = '<div class="setup-warn"><h2>Could not load a required library</h2><p>The app needs internet access to load the QR code and Excel export libraries. Please check the connection and refresh. If this factory network blocks outside sites, ask IT to allow <b>unpkg.com</b>, <b>cdn.jsdelivr.net</b>, and <b>cdnjs.cloudflare.com</b>.</p></div>';
 }
 
 let MACHINES = [], CURRENT = null;
