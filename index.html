@@ -3065,7 +3065,7 @@ async function uploadPhoto(file){
     const ext  = mime.includes('png') ? 'png' : mime.includes('webp') ? 'webp' : 'jpg';
     const oldPath = CURRENT.image_path || null;
     const path = `machine-photos/${CURRENT.code}/${Date.now()}.${ext}`.replace(/\s+/g,'_');
-    const up = await sb.storage.from('catalogs').upload(path, blob, { upsert:true, contentType:mime });
+    const up = await sb.storage.from('catalogs').upload(path, blob, { upsert:false, contentType:mime });
     if (up.error) throw new Error(up.error.message);
     const storedPath = 'catalogs/' + up.data.path;
     const res = await sb.from('machines').update({ image_path: storedPath }).eq('code', CURRENT.code);
